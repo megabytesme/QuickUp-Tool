@@ -13,11 +13,14 @@ using System.Net.Http;
 using System.Net;
 using Microsoft.UI.Dispatching;
 using Windows.ApplicationModel.DataTransfer;
+using System.Collections.ObjectModel;
 
 namespace QuickUp
 {
     public sealed partial class MainWindow : Window
     {
+        public ObservableCollection<UploadedFile> UploadedFiles { get; } = new ObservableCollection<UploadedFile>();
+
         FontIcon uploadIcon = new FontIcon
         {
             Glyph = "\uE898",
@@ -32,6 +35,11 @@ namespace QuickUp
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(AppTitleBar);
             this.progressRingButton.Content = uploadIcon;
+        }
+
+        private void AddToHistory(string fileName, string status, string url)
+        {
+            UploadedFiles.Add(new UploadedFile { FileName = fileName, Status = status, URL = url });
         }
 
         private async void ProgressRingButton_Click(object sender, RoutedEventArgs e)
@@ -155,11 +163,13 @@ namespace QuickUp
                             Clipboard.SetContent(dataPackage);
                             progressRingButton.IsEnabled = true;
                             progressRingButton.Content = "File uploaded!";
+                            AddToHistory(file.Name, "Successful", fileLink);
                         }
                         else
                         {
                             progressRingButton.IsEnabled = true;
                             progressRingButton.Content = "File failed to upload.";
+                            AddToHistory(file.Name, "Unsuccessful", "N/A");
                         }
                     });
                 }
@@ -174,5 +184,10 @@ namespace QuickUp
                 progressRing.Value = progress;
             });
         }
+    }
+    public class UploadedFile {
+        public string FileName { get; set; }
+        public string Status { get; set; }
+        public string URL { get; set; }
     }
 }
