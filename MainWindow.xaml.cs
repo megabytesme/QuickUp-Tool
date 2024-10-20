@@ -5,6 +5,7 @@ using System.Linq;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using Microsoft.UI.Xaml.Media;
+using System.Threading.Tasks;
 
 namespace QuickUp
 {
@@ -35,10 +36,10 @@ namespace QuickUp
             WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
             picker.FileTypeFilter.Add("*");
 
-            var file = await picker.PickSingleFileAsync();
-            if (file != null)
+            var storageFile = await picker.PickSingleFileAsync();
+            if (storageFile != null)
             {
-                // Handle the selected file
+                await HandleFile(storageFile);
             }
         }
 
@@ -57,10 +58,15 @@ namespace QuickUp
                     var storageFile = items[0] as StorageFile;
                     if (storageFile != null)
                     {
-                        // Handle the dropped file
+                        await HandleFile(storageFile);
                     }
                 }
             }
+        }
+
+        private static async Task HandleFile(StorageFile file)
+        {
+
         }
     }
 }
