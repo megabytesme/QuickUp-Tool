@@ -64,9 +64,9 @@ namespace QuickUp
             }
         }
 
-        private static async Task HandleFile(StorageFile file)
+        private async Task HandleFile(StorageFile file)
         {
-
+            progressRingButton.IsEnabled = false;
         }
     }
 }
