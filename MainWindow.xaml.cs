@@ -29,6 +29,14 @@ namespace QuickUp
     public sealed partial class MainWindow : Window
     {
         public ObservableCollection<UploadedFile> UploadedFiles { get; } = new ObservableCollection<UploadedFile>();
+        
+        private async void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is UploadedFile file)
+            {
+                DeleteFromHistory(file);
+            }
+        }
 
         FontIcon uploadIcon = new FontIcon
         {
@@ -44,7 +52,7 @@ namespace QuickUp
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(AppTitleBar);
             this.progressRingButton.Content = uploadIcon;
-            LoadHistoryAsync();
+            _ = LoadHistoryAsync();
         }
 
         private async Task LoadHistoryAsync()
@@ -56,15 +64,15 @@ namespace QuickUp
                 historyFile = await localFolder.CreateFileAsync("uploadHistory.json", CreationCollisionOption.ReplaceExisting);
                 string initialJson = JsonSerializer.Serialize(new List<UploadedFile>());
                 await FileIO.WriteTextAsync(historyFile, initialJson);
+                this.noHistory.Visibility = Visibility.Visible;
             }
             else
             {
                 historyFile = await localFolder.GetFileAsync("uploadHistory.json");
             }
-
             string json = await FileIO.ReadTextAsync(historyFile);
             var uploadedFiles = JsonSerializer.Deserialize<List<UploadedFile>>(json);
-            if (uploadedFiles != null)
+            if (uploadedFiles != null && uploadedFiles.Any())
             {
                 this.noHistory.Visibility = Visibility.Collapsed;
                 foreach (var file in uploadedFiles)
@@ -72,13 +80,17 @@ namespace QuickUp
                     UploadedFiles.Add(file);
                 }
             }
+            else
+            {
+                this.noHistory.Visibility = Visibility.Visible;
+            }
         }
+
 
         private async Task SaveHistoryAsync()
         {
             var localFolder = ApplicationData.Current.LocalFolder;
             StorageFile historyFile = await localFolder.GetFileAsync("uploadHistory.json");
-
             string json = JsonSerializer.Serialize(UploadedFiles);
             await FileIO.WriteTextAsync(historyFile, json);
         }
@@ -88,6 +100,16 @@ namespace QuickUp
             UploadedFiles.Add(new UploadedFile { FileName = fileName, Status = status, URL = url });
             await SaveHistoryAsync();
             this.noHistory.Visibility = Visibility.Collapsed;
+        }
+
+        private async void DeleteFromHistory(UploadedFile file)
+        {
+            UploadedFiles.Remove(file);
+            if (UploadedFiles.Count == 0)
+            {
+                this.noHistory.Visibility = Visibility.Visible;
+            }
+            await SaveHistoryAsync();
         }
 
         private async void ProgressRingButton_Click(object sender, RoutedEventArgs e)
@@ -189,7 +211,6 @@ namespace QuickUp
         private async Task UploadFile(StorageFile file)
         {
             var uri = new Uri("https://file.io/");
-
             using (var httpClient = new HttpClient())
             {
                 using (var content = new MultipartFormDataContent())

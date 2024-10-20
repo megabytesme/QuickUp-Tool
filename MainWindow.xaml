@@ -44,6 +44,9 @@
                                     <TextBlock Text="{x:Bind FileName}" Width="200"/>
                                     <TextBlock Text="{x:Bind Status}" Width="200"/>
                                     <HyperlinkButton Content="{x:Bind URL}" NavigateUri="{x:Bind URL}" Width="300"/>
+                                    <Button Click="DeleteButton_Click" Width="40" Height="40" Background="Transparent" BorderThickness="0">
+                                        <FontIcon Glyph="&#xE74D;" />
+                                    </Button>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
