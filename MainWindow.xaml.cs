@@ -80,6 +80,7 @@ namespace QuickUp
         {
             UploadedFiles.Add(new UploadedFile { FileName = fileName, Status = status, URL = url });
             await SaveHistoryAsync();
+            this.noHistory.Visibility = Visibility.Collapsed;
         }
 
         private async void ProgressRingButton_Click(object sender, RoutedEventArgs e)
