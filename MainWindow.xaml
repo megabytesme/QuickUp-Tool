@@ -32,7 +32,8 @@
                         Width="200" Height="200" BorderThickness="0" Background="Transparent"
                         Click="ProgressRingButton_Click" AllowDrop="True"
                         DragOver="ProgressRingButton_DragOver" Drop="ProgressRingButton_Drop"
-                        CornerRadius="100" Style="{StaticResource AccentButtonStyle}" />
+                        CornerRadius="100" Style="{StaticResource AccentButtonStyle}" 
+                        Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
             </RelativePanel>
 
             <Border Grid.Row="1" Background="{ThemeResource SystemChromeMediumLowColor}" CornerRadius="10" Padding="10" Margin="20,20,20,0" Width="800">
