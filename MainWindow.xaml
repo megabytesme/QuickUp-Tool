@@ -48,6 +48,7 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+                    <TextBlock Name="noHistory" Text="Uploaded files will appear here" FontStyle="Italic" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 </StackPanel>
             </Border>
         </StackPanel>

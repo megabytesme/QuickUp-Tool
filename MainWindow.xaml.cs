@@ -59,6 +59,7 @@ namespace QuickUp
             var uploadedFiles = JsonSerializer.Deserialize<List<UploadedFile>>(json);
             if (uploadedFiles != null)
             {
+                this.noHistory.Visibility = Visibility.Collapsed;
                 foreach (var file in uploadedFiles)
                 {
                     UploadedFiles.Add(file);
