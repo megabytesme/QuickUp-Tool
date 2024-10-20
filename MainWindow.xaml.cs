@@ -19,6 +19,13 @@ using System.Text.Json;
 
 namespace QuickUp
 {
+    public class UploadedFile
+    {
+        public string FileName { get; set; }
+        public string Status { get; set; }
+        public string URL { get; set; }
+    }
+
     public sealed partial class MainWindow : Window
     {
         public ObservableCollection<UploadedFile> UploadedFiles { get; } = new ObservableCollection<UploadedFile>();
@@ -134,7 +141,8 @@ namespace QuickUp
             {
                 DispatcherQueue.TryEnqueue(() =>
                 {
-                    progressRingButton.Content = "File is too big!";
+                    this.progressRingButton.Content = uploadIcon;
+                    AddToHistory(file.Name, "Unsuccessful - Too big", "N/A");
                     progressRingButton.IsEnabled = true;
                 });
                 return;
@@ -203,14 +211,16 @@ namespace QuickUp
                             dataPackage.SetText(fileLink);
                             Clipboard.SetContent(dataPackage);
                             progressRingButton.IsEnabled = true;
-                            progressRingButton.Content = "File uploaded!";
+                            this.progressRingButton.Content = uploadIcon;
                             AddToHistory(file.Name, "Successful", fileLink);
+                            this.progressRing.Value = 0;
                         }
                         else
                         {
                             progressRingButton.IsEnabled = true;
-                            progressRingButton.Content = "File failed to upload.";
-                            AddToHistory(file.Name, "Unsuccessful", "N/A");
+                            this.progressRingButton.Content = uploadIcon;
+                            AddToHistory(file.Name, "Unsuccessful - Failed", "N/A");
+                            this.progressRing.Value = 0;
                         }
                     });
                 }
@@ -225,10 +235,5 @@ namespace QuickUp
                 progressRing.Value = progress;
             });
         }
-    }
-    public class UploadedFile {
-        public string FileName { get; set; }
-        public string Status { get; set; }
-        public string URL { get; set; }
     }
 }
