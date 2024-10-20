@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "QuickUp (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "QuickUp (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
