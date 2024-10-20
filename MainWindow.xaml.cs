@@ -14,6 +14,8 @@ using System.Net;
 using Microsoft.UI.Dispatching;
 using Windows.ApplicationModel.DataTransfer;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace QuickUp
 {
@@ -35,11 +37,48 @@ namespace QuickUp
             this.ExtendsContentIntoTitleBar = true;
             this.SetTitleBar(AppTitleBar);
             this.progressRingButton.Content = uploadIcon;
+            LoadHistoryAsync();
         }
 
-        private void AddToHistory(string fileName, string status, string url)
+        private async Task LoadHistoryAsync()
+        {
+            var localFolder = ApplicationData.Current.LocalFolder;
+            StorageFile historyFile;
+            if (await localFolder.TryGetItemAsync("uploadHistory.json") == null)
+            {
+                historyFile = await localFolder.CreateFileAsync("uploadHistory.json", CreationCollisionOption.ReplaceExisting);
+                string initialJson = JsonSerializer.Serialize(new List<UploadedFile>());
+                await FileIO.WriteTextAsync(historyFile, initialJson);
+            }
+            else
+            {
+                historyFile = await localFolder.GetFileAsync("uploadHistory.json");
+            }
+
+            string json = await FileIO.ReadTextAsync(historyFile);
+            var uploadedFiles = JsonSerializer.Deserialize<List<UploadedFile>>(json);
+            if (uploadedFiles != null)
+            {
+                foreach (var file in uploadedFiles)
+                {
+                    UploadedFiles.Add(file);
+                }
+            }
+        }
+
+        private async Task SaveHistoryAsync()
+        {
+            var localFolder = ApplicationData.Current.LocalFolder;
+            StorageFile historyFile = await localFolder.GetFileAsync("uploadHistory.json");
+
+            string json = JsonSerializer.Serialize(UploadedFiles);
+            await FileIO.WriteTextAsync(historyFile, json);
+        }
+
+        private async void AddToHistory(string fileName, string status, string url)
         {
             UploadedFiles.Add(new UploadedFile { FileName = fileName, Status = status, URL = url });
+            await SaveHistoryAsync();
         }
 
         private async void ProgressRingButton_Click(object sender, RoutedEventArgs e)
