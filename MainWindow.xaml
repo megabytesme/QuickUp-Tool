@@ -20,12 +20,15 @@
         </Border>
         <RelativePanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <ProgressRing x:Name="progressRing" Width="200" Height="200" Value="0"
-                          IsIndeterminate="False"
-                          Background="LightGray" RenderTransformOrigin="0.5, 0.5">
-                <ProgressRing.RenderTransform>
-                    <ScaleTransform ScaleX="1" ScaleY="1"/>
-                </ProgressRing.RenderTransform>
-            </ProgressRing>
+                          IsIndeterminate="False" Background="LightGray" RenderTransformOrigin="0.5, 0.5"/>
+
+            <Button Name="progressRingButton" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Width="200" Height="200" BorderThickness="0" Background="Transparent"
+                    Click="ProgressRingButton_Click"
+                    AllowDrop="True" DragOver="ProgressRingButton_DragOver" Drop="ProgressRingButton_Drop"
+                    CornerRadius="100" Style="{StaticResource AccentButtonStyle}" />
+
         </RelativePanel>
+
     </Grid>
 </Window>
