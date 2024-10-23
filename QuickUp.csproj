@@ -13,6 +13,7 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <PackageCertificateThumbprint>F97A4989F2D3224B05EB85518E856066985799FE</PackageCertificateThumbprint>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
   </PropertyGroup>
 
   <ItemGroup>
