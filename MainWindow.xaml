@@ -11,70 +11,72 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid>
-        <Border x:Name="AppTitleBar" Grid.Column="1" VerticalAlignment="Top">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                <FontIcon Glyph="&#xE898;" VerticalAlignment="Center" Margin="8,8,8,0" />
-                <TextBlock x:Name="AppTitle" Text="QuickUp" VerticalAlignment="Center" Margin="0,8,0,0" />
-            </StackPanel>
-        </Border>
+    <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Border x:Name="AppTitleBar" Grid.Column="1" VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                    <FontIcon Glyph="&#xE898;" VerticalAlignment="Center" Margin="8,8,8,0" />
+                    <TextBlock x:Name="AppTitle" Text="QuickUp" VerticalAlignment="Center" Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
 
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,80,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,50,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <RelativePanel Grid.Row="0" HorizontalAlignment="Center">
-                <ProgressRing x:Name="progressRing" Width="200" Height="200" Value="0"
+                <RelativePanel Grid.Row="0" HorizontalAlignment="Center">
+                    <ProgressRing x:Name="progressRing" Width="200" Height="200" Value="0"
                               IsIndeterminate="False" Background="LightGray" RenderTransformOrigin="0.5, 0.5"/>
-                <Button Name="progressRingButton" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    <Button Name="progressRingButton" HorizontalAlignment="Center" VerticalAlignment="Center"
                         Width="200" Height="200" BorderThickness="0" Background="Transparent"
                         Click="ProgressRingButton_Click" AllowDrop="True"
                         DragOver="ProgressRingButton_DragOver" Drop="ProgressRingButton_Drop"
                         CornerRadius="100" Style="{StaticResource AccentButtonStyle}" 
                         Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
-            </RelativePanel>
+                </RelativePanel>
 
-            <Border Grid.Row="1" Background="{ThemeResource SystemChromeMediumLowColor}" CornerRadius="10" Padding="10" Margin="20,20,20,20" Width="800">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="300"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="File Name" FontWeight="Bold" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left"/>
-                    <TextBlock Text="Status" FontWeight="Bold" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left"/>
-                    <TextBlock Text="URL" FontWeight="Bold" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left"/>
-                    <TextBlock Width="40" Grid.Row="0" Grid.Column="3"/>
-                    <ListView Grid.Row="1" Grid.ColumnSpan="4" x:Name="historyListView" ItemsSource="{x:Bind UploadedFiles}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="local:UploadedFile">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200"/>
-                                        <ColumnDefinition Width="200"/>
-                                        <ColumnDefinition Width="300"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{x:Bind FileName}" Grid.Column="0"/>
-                                    <TextBlock Text="{x:Bind Status}" Grid.Column="1"/>
-                                    <HyperlinkButton Content="{x:Bind URL}" NavigateUri="{x:Bind URL}" Grid.Column="2"/>
-                                    <Button Click="DeleteButton_Click" Width="40" Height="40" Background="Transparent" BorderThickness="0" Grid.Column="3">
-                                        <FontIcon Glyph="&#xE74D;" />
-                                    </Button>
-                                </Grid>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                    <TextBlock Name="noHistory" Text="Uploaded files will appear here" FontStyle="Italic" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="4"/>
-                </Grid>
-            </Border>
+                <Border Grid.Row="1" Background="{ThemeResource SystemChromeMediumLowColor}" CornerRadius="10" Padding="10" Margin="20,20,20,20" Width="800">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="File Name" FontWeight="Bold" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left"/>
+                        <TextBlock Text="Status" FontWeight="Bold" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left"/>
+                        <TextBlock Text="URL" FontWeight="Bold" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left"/>
+                        <TextBlock Width="40" Grid.Row="0" Grid.Column="3"/>
+                        <ListView Grid.Row="1" Grid.ColumnSpan="4" x:Name="historyListView" ItemsSource="{x:Bind UploadedFiles}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="local:UploadedFile">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="300"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{x:Bind FileName}" Grid.Column="0"/>
+                                        <TextBlock Text="{x:Bind Status}" Grid.Column="1"/>
+                                        <HyperlinkButton Content="{x:Bind URL}" NavigateUri="{x:Bind URL}" Grid.Column="2"/>
+                                        <Button Click="DeleteButton_Click" Width="40" Height="40" Background="Transparent" BorderThickness="0" Grid.Column="3">
+                                            <FontIcon Glyph="&#xE74D;" />
+                                        </Button>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <TextBlock Name="noHistory" Text="Uploaded files will appear here" FontStyle="Italic" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="4"/>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </Window>
