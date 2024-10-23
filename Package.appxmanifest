@@ -12,7 +12,7 @@
     Publisher="CN=F0BC24FD-E28E-4D47-BEEA-3B6CF444653E"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="6f70e5c0-18a8-44b0-8e04-3c4be0b18cc8" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="85cb1d4d-9feb-4059-8e0a-2c7a63e4d5e1" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>QuickUp Tool</DisplayName>
@@ -35,18 +35,12 @@
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="QuickUp Tool"
-        Description="QuickUp is a lightweight open-source utility which allows you to upload files very quickly - No need to make an account (and no ads)! It is also a WinUI 3 application - Not a PWA!"
+        Description="QuickUp Tool is a lightweight open-source utility which allows you to upload files very quickly - No need to make an account (and no ads)! It is also a WinUI 3 application - Not a PWA!"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
-        <uap:InitialRotationPreference>
-          <uap:Rotation Preference="landscape"/>
-          <uap:Rotation Preference="portrait"/>
-          <uap:Rotation Preference="landscapeFlipped"/>
-          <uap:Rotation Preference="portraitFlipped"/></uap:InitialRotationPreference>
-        <uap:LockScreen BadgeLogo="Assets\BadgeLogo.png" Notification="badge"/>
       </uap:VisualElements>
     </Application>
   </Applications>

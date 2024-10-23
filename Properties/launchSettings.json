@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "QuickUp (Package)": {
+    "QuickUp Tool (Package)": {
       "commandName": "MsixPackage"
     },
-    "QuickUp (Unpackaged)": {
+    "QuickUp Tool (Unpackaged)": {
       "commandName": "Project"
     }
   }
