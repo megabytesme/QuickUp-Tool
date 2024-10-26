@@ -38,10 +38,12 @@ namespace QuickUp
 
         private async Task LoadHistoryAsync()
         {
+            this.filesGrid.Visibility = Visibility.Collapsed;
             var uploadedFiles = await FileManager.LoadHistoryAsync();
             if (uploadedFiles.Any())
             {
                 this.noHistory.Visibility = Visibility.Collapsed;
+                this.filesGrid.Visibility = Visibility.Visible;
                 foreach (var file in uploadedFiles)
                 {
                     UploadedFiles.Add(file);
@@ -62,6 +64,7 @@ namespace QuickUp
                 if (UploadedFiles.Count == 0)
                 {
                     this.noHistory.Visibility = Visibility.Visible;
+                    this.filesGrid.Visibility = Visibility.Collapsed;
                 }
                 await FileManager.SaveHistoryAsync(UploadedFiles.ToList());
             }
