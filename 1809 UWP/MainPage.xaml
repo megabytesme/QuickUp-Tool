@@ -17,7 +17,7 @@
             </StackPanel>
         </Border>
 
-        <Grid Width="400" Margin="0,60,0,0">
+        <Grid Width="auto" Margin="0,60,0,0">
             <muxc:Grid.ColumnDefinitions>
                 <muxc:ColumnDefinition Width="100*" />
                 <muxc:ColumnDefinition Width="100*" />
@@ -34,20 +34,20 @@
                 FontFamily="Segoe MDL2 Assets"
                 FontSize="20"
                 Content="&#xE898;"
-                CornerRadius="100" Style="{muxc:StaticResource AccentButtonStyle}"
+                CornerRadius="100"
+                Style="{muxc:ThemeResource AccentButtonStyle}"
                 Foreground="{muxc:ThemeResource SystemControlForegroundBaseHighBrush}"
                 RenderTransformOrigin="-1.45,0.887" 
-                muxc:Grid.ColumnSpan="2" 
-                Margin="100,-10,0,0"
-                VerticalAlignment="Top" />
+                muxc:Grid.ColumnSpan="2"
+                VerticalAlignment="Top" muxc:Grid.RowSpan="2" HorizontalAlignment="Center" />
             <muxc:ProgressBar
                 Name="progressBar"
                 Width="200"
                 Height="5" 
                 muxc:Grid.ColumnSpan="2" 
-                Margin="0,10,0,0" 
+                Margin="80,205,80,0" 
                 VerticalAlignment="Top" 
-                muxc:Grid.Row="2" />
+                muxc:Grid.Row="1" />
         </Grid>
 
         <Grid>
