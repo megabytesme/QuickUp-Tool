@@ -8,15 +8,15 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="MegaBytesMe.QuickUpTool"
-    Publisher="CN=F0BC24FD-E28E-4D47-BEEA-3B6CF444653E"
+    Name="1d9e264f-0728-4774-84c0-6e463cf818a7"
+    Publisher="CN=ben"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="85cb1d4d-9feb-4059-8e0a-2c7a63e4d5e1" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="1d9e264f-0728-4774-84c0-6e463cf818a7" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>QuickUp Tool</DisplayName>
-    <PublisherDisplayName>MegaBytesMe</PublisherDisplayName>
+    <DisplayName>WinUI 3</DisplayName>
+    <PublisherDisplayName>ben</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -34,12 +34,12 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="QuickUp Tool"
-        Description="QuickUp Tool is a lightweight open-source utility which allows you to upload files very quickly - No need to make an account (and no ads)! It is also a WinUI 3 application - Not a PWA!"
+        DisplayName="WinUI 3"
+        Description="WinUI 3"
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
@@ -47,6 +47,8 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
-    <Capability Name="internetClient"/>
+    <Capability Name="internetClient" />
+    <uap:Capability Name="documentsLibrary" />
+    <rescap:Capability Name="broadFileSystemAccess" />
   </Capabilities>
 </Package>

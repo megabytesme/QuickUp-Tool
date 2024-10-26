@@ -1,9 +1,9 @@
 {
   "profiles": {
-    "QuickUp Tool (Package)": {
+    "WinUI 3 (Package)": {
       "commandName": "MsixPackage"
     },
-    "QuickUp Tool (Unpackaged)": {
+    "WinUI 3 (Unpackaged)": {
       "commandName": "Project"
     }
   }
