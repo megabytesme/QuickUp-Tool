@@ -1,16 +1,15 @@
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System;
-using System.Linq;
-using Windows.Storage.Pickers;
-using Windows.Storage;
 using Microsoft.UI.Xaml.Media;
-using System.Threading.Tasks;
 using QuickUp.Shared;
-using Microsoft.UI.Dispatching;
+using System;
 using System.Collections.ObjectModel;
-using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 
 namespace QuickUp
 {
@@ -25,6 +24,7 @@ namespace QuickUp
         };
 
         public ObservableCollection<UploadedFile> UploadedFiles { get; } = new ObservableCollection<UploadedFile>();
+
         private DispatcherQueue dispatcherQueue;
 
         public MainWindow()
@@ -116,6 +116,7 @@ namespace QuickUp
             dispatcherQueue.TryEnqueue(() =>
             {
                 progressRingButton.IsEnabled = false;
+                progressRingButton.FontFamily = new FontFamily("XamlAutoFontFamily");
                 progressRingButton.Content = "Uploading" + Environment.NewLine + file.Name;
             });
 
