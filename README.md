@@ -1,4 +1,5 @@
 # QuickUp Tool
+![image](https://github.com/user-attachments/assets/a5dcbc6a-d987-4c29-b9bc-a53edcd2cc79)
 
 QuickUp Tool is a lightweight application designed to quickly upload files for free to a file provider.
 
