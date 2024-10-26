@@ -116,31 +116,31 @@ namespace QuickUp
 
         private async Task HandleFile(StorageFile file)
         {
-            dispatcherQueue.TryEnqueue(() =>
-            {
-                progressRingButton.IsEnabled = false;
-                progressRingButton.FontFamily = new FontFamily("XamlAutoFontFamily");
-                progressRingButton.Content = "Uploading" + Environment.NewLine + file.Name;
-            });
+            progressRingButton.IsEnabled = false;
+            progressRingButton.FontFamily = new FontFamily("XamlAutoFontFamily");
+            progressRingButton.Content = "Uploading" + Environment.NewLine + file.Name;
 
             string url = await UploadManager.UploadFile(file, ReportProgress);
-            dispatcherQueue.TryEnqueue(() =>
+
+            progressRingButton.IsEnabled = true;
+            this.progressRingButton.Content = uploadIcon;
+
+            this.filesGrid.Visibility = Visibility.Visible;
+
+            if (!string.IsNullOrEmpty(url))
             {
-                progressRingButton.IsEnabled = true;
-                this.progressRingButton.Content = uploadIcon;
-                if (!string.IsNullOrEmpty(url))
-                {
-                    AddToHistory(file.Name, "Successful", url);
-                    var dataPackage = new DataPackage();
-                    dataPackage.SetText(url);
-                    Clipboard.SetContent(dataPackage);
-                }
-                else
-                {
-                    AddToHistory(file.Name, "Unsuccessful - Failed", "N/A");
-                }
-                this.progressRing.Value = 0;
-            });
+                AddToHistory(file.Name, "Successful", url);
+
+                var dataPackage = new DataPackage();
+                dataPackage.SetText(url);
+                Clipboard.SetContent(dataPackage);
+            }
+            else
+            {
+                AddToHistory(file.Name, "Unsuccessful - Failed", "N/A");
+            }
+
+            this.progressRing.Value = 0;
         }
 
         private void ReportProgress(long bytesSent, long totalBytes)
