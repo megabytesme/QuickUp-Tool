@@ -1,22 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>918e86cc-c1b6-4684-a507-3efd0cb5f164</SharedGUID>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Shared_Code</Import_RootNamespace>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)FileInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DatabaseService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BinInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadedFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FileBinResponseObject.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadService.cs" />
-  </ItemGroup>
-</Project>
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>918e86cc-c1b6-4684-a507-3efd0cb5f164</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Shared_Code</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Data\FileInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\BinInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\UploadedFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\UploadManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\UploadRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\FileBinResponseObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\UploadResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\UploadService.cs" />
+    
+  </ItemGroup></Project>
