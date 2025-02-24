@@ -1,46 +1,28 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Json;
+using System.Linq;
 using System.Threading.Tasks;
-using Windows.Storage;
 
 namespace QuickUp.Shared
 {
     public static class FileManager
     {
-        public static async Task<List<UploadedFile>> LoadHistoryAsync()
+        private static DatabaseService _databaseService = new DatabaseService();
+
+        public static Task<List<UploadedFile>> LoadHistoryAsync()
         {
-            var roamingFolder = ApplicationData.Current.RoamingFolder;
-            StorageFile historyFile = await roamingFolder.TryGetItemAsync("uploadHistory.json") as StorageFile;
-
-            if (historyFile == null)
+            return Task.Run(() =>
             {
-                historyFile = await roamingFolder.CreateFileAsync("uploadHistory.json", CreationCollisionOption.ReplaceExisting);
-                DataContractJsonSerializer writeSerializer = new DataContractJsonSerializer(typeof(List<UploadedFile>));
-                using (Stream stream = await historyFile.OpenStreamForWriteAsync())
-                {
-                    writeSerializer.WriteObject(stream, new List<UploadedFile>());
-                }
-            }
-
-            DataContractJsonSerializer readSerializer = new DataContractJsonSerializer(typeof(List<UploadedFile>));
-            using (Stream stream = await historyFile.OpenStreamForReadAsync())
-            {
-                var files = (List<UploadedFile>)readSerializer.ReadObject(stream);
-                return files ?? new List<UploadedFile>();
-            }
+                return _databaseService.Connection.Table<UploadedFile>().ToList();
+            });
         }
 
-        public static async Task SaveHistoryAsync(List<UploadedFile> uploadedFiles)
+        public static Task SaveHistoryAsync(List<UploadedFile> uploadedFiles)
         {
-            var roamingFolder = ApplicationData.Current.RoamingFolder;
-            StorageFile historyFile = await roamingFolder.GetFileAsync("uploadHistory.json");
-            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(List<UploadedFile>));
-            using (Stream stream = await historyFile.OpenStreamForWriteAsync())
+            return Task.Run(() =>
             {
-                serializer.WriteObject(stream, uploadedFiles);
-            }
+                _databaseService.Connection.DeleteAll<UploadedFile>();
+                _databaseService.Connection.InsertAll(uploadedFiles);
+            });
         }
     }
 }

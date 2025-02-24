@@ -1,15 +1,13 @@
-using System.Runtime.Serialization;
+using SQLite;
 
 namespace QuickUp.Shared
 {
-    [DataContract]
     public class UploadedFile
     {
-        [DataMember]
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
         public string FileName { get; set; }
-        [DataMember]
         public string Status { get; set; }
-        [DataMember]
         public string URL { get; set; }
     }
 }

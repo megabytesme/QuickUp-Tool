@@ -9,6 +9,7 @@
     <Import_RootNamespace>Shared_Code</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DatabaseService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UploadedFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UploadManager.cs" />
