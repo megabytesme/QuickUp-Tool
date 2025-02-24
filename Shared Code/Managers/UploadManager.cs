@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -11,11 +10,20 @@ using Windows.Storage.FileProperties;
 
 namespace QuickUp.Shared
 {
-    public static class UploadManager
+    public class UploadManager
     {
-        public static async Task<string> UploadFile(StorageFile file, Action<long, long> reportProgress)
+        private static readonly HttpClient _httpClient = new HttpClient();
+        private readonly UploadRepository _uploadRepository;
+
+        public UploadManager(UploadRepository uploadRepository)
         {
-            UploadedFile uploadedFileInfo = null;
+            _uploadRepository = uploadRepository ?? throw new ArgumentNullException(nameof(uploadRepository));
+        }
+
+        public async Task<string> UploadFile(StorageFile file, UploadedFile uploadedFileInfo, IProgress<double> progress)
+        {
+            if (uploadedFileInfo == null) throw new ArgumentNullException(nameof(uploadedFileInfo));
+
             try
             {
                 const ulong twoGB = 2UL * 1024 * 1024 * 1024;
@@ -27,68 +35,84 @@ namespace QuickUp.Shared
                     throw new Exception("File size exceeds the limit of 2GB.");
                 }
 
-                uploadedFileInfo = new UploadedFile
-                {
-                    FileName = file.Name,
-                    Status = "Uploading"
-                };
-                await InsertUploadedFile(uploadedFileInfo);
+                uploadedFileInfo.Status = "Uploading";
 
-                var uri = new Uri("https://file.io/");
-                var httpClient = new HttpClient();
-                var content = new MultipartFormDataContent();
+                string binName = Guid.NewGuid().ToString();
+                string fileName = file.Name;
+                var uri = new Uri($"https://filebin.net/{binName}/{fileName}");
                 var fileStream = await file.OpenReadAsync();
-                var streamContent = new ProgressableStreamContent(fileStream.AsStreamForRead(), reportProgress);
+                var streamContent = new ProgressableStreamContent(fileStream.AsStreamForRead(), (bytesSent, totalBytes) =>
+                {
+                    if (totalBytes > 0)
+                    {
+                        double progressPercentage = (double)bytesSent / totalBytes * 100;
+                        progress.Report(progressPercentage);
+                    }
+                });
 
                 streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                content.Add(streamContent, "file", file.Name);
 
-                var response = await httpClient.PostAsync(uri, content);
+                var response = await _httpClient.PostAsync(uri, streamContent);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
                 {
-                    DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(ResponseObject));
-                    using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(responseContent)))
+                    if (response.StatusCode == HttpStatusCode.Created)
                     {
-                        var responseObject = (ResponseObject)serializer.ReadObject(ms);
-                        string urlString = responseObject.link;
+                        FilebinResponseObject responseObject = DeserializeFilebinResponse(responseContent);
+                        string baseUrl = "https://filebin.net/";
+                        string fileUrlString = $"{baseUrl}{binName}/{fileName}";
 
-                        if (Uri.TryCreate(urlString, UriKind.Absolute, out Uri validUri))
+                        if (Uri.TryCreate(fileUrlString, UriKind.Absolute, out Uri validUri))
                         {
                             uploadedFileInfo.URL = validUri.ToString();
                             uploadedFileInfo.Status = "Uploaded";
-                            await UpdateUploadedFile(uploadedFileInfo);
+                            uploadedFileInfo.ExpiryDate = responseObject?.Bin?.ExpiredAt;
+                            uploadedFileInfo.FileSizeReadable = responseObject?.File?.BytesReadable;
+                            uploadedFileInfo.ContentType = responseObject?.File?.ContentType;
                             return validUri.ToString();
                         }
                         else
                         {
-                            uploadedFileInfo.Status = "Upload Failed - Invalid URL";
-                            await UpdateUploadedFile(uploadedFileInfo);
-                            System.Diagnostics.Debug.WriteLine($"Invalid URL: {urlString}");
-                            throw new Exception("Upload was successful but the returned URL is invalid.");
+                            throw new Exception("Upload was successful but the constructed URL is invalid.");
                         }
+                    }
+                    else
+                    {
+                        throw new Exception($"Upload failed with unexpected HTTP success status code: {response.StatusCode}. Expected 201 Created.");
                     }
                 }
                 else
                 {
-                    uploadedFileInfo.Status = "Upload Failed - HTTP Error";
-                    await UpdateUploadedFile(uploadedFileInfo);
-                    System.Diagnostics.Debug.WriteLine($"Upload failed with status code: {response.StatusCode}");
                     throw new Exception($"Upload failed with HTTP status code: {response.StatusCode}.");
                 }
             }
             catch (Exception ex)
             {
-                if (uploadedFileInfo != null)
-                {
-                    uploadedFileInfo.Status = "Upload Failed - " + ex.Message;
-                    await UpdateUploadedFile(uploadedFileInfo);
-                }
-                System.Diagnostics.Debug.WriteLine($"Error in UploadFile: {ex.Message}");
                 throw;
             }
+            finally
+            {
+            }
         }
+
+        private FilebinResponseObject DeserializeFilebinResponse(string responseContent)
+        {
+            try
+            {
+                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(FilebinResponseObject));
+                using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(responseContent)))
+                {
+                    FilebinResponseObject responseObject = (FilebinResponseObject)serializer.ReadObject(ms) as FilebinResponseObject;
+                    return responseObject;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("JSON deserialization failed: " + ex.Message);
+            }
+        }
+
 
         public class ProgressableStreamContent : HttpContent
         {
@@ -121,7 +145,6 @@ namespace QuickUp.Shared
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error in SerializeToStreamAsync: {ex.Message}");
                     throw;
                 }
             }
@@ -131,31 +154,6 @@ namespace QuickUp.Shared
                 length = _content.Length;
                 return true;
             }
-        }
-
-        [DataContract]
-        private class ResponseObject
-        {
-            [DataMember]
-            public string link { get; set; }
-        }
-
-        private static DatabaseService _databaseService = new DatabaseService();
-
-        private static async Task InsertUploadedFile(UploadedFile file)
-        {
-            await Task.Run(() =>
-            {
-                _databaseService.Connection.Insert(file);
-            });
-        }
-
-        private static async Task UpdateUploadedFile(UploadedFile file)
-        {
-            await Task.Run(() =>
-            {
-                _databaseService.Connection.Update(file);
-            });
         }
     }
 }
