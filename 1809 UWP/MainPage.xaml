@@ -58,6 +58,9 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Click="ProgressRingButton_Click"
+                            AllowDrop="True"
+                            DragOver="ProgressRingButton_DragOver"
+                            Drop="ProgressRingButton_Drop"
                             CornerRadius="100"
                             Foreground="Black"
                             HorizontalAlignment="Center"
@@ -83,110 +86,72 @@
                 </Border>
             </Grid>
         </Grid>
-
-        <Border
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
-            CornerRadius="8"
-            Margin="20,280,20,20"
-            VerticalAlignment="Stretch"
-            HorizontalAlignment="Stretch"
-            Grid.Row="1"
-            Padding="12">
-            <ScrollViewer
-                HorizontalScrollMode="Auto"
-                HorizontalScrollBarVisibility="Auto"
-                VerticalScrollMode="Auto"
-                VerticalScrollBarVisibility="Auto">
-                <Grid>
-                    <TextBlock
-                        Name="noHistory"
-                        Text="Uploaded files will appear here"
-                        FontStyle="Italic"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center" />
-                    <Grid Name="filesGrid" Margin="0" Visibility="Collapsed">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" MaxWidth="200" />
-                            <ColumnDefinition Width="2*" MaxWidth="200" />
-                            <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="Auto" MaxWidth="50" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock
-                            Text="File Name"
-                            FontWeight="SemiBold"
-                            HorizontalAlignment="Left"
-                            Padding="10,8,10,4"
-                            Grid.Column="0" />
-                        <TextBlock
-                            Text="Status"
-                            FontWeight="SemiBold"
-                            HorizontalAlignment="Left"
-                            Padding="10,8,10,4"
-                            Grid.Column="1" />
-                        <TextBlock
-                            Text="URL"
-                            FontWeight="SemiBold"
-                            HorizontalAlignment="Left"
-                            Padding="10,8,10,4"
-                            Grid.Column="2" />
-                        <TextBlock Grid.Column="3" Width="34" Margin="0,8,0,0" />
-
-                        <ItemsControl
-                            ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}"
-                            Grid.Row="1"
-                            Grid.ColumnSpan="4">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="shared:UploadedFile">
-                                    <Grid Margin="0,0,0,6">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="2*" MaxWidth="200" />
-                                            <ColumnDefinition Width="2*" MaxWidth="200" />
-                                            <ColumnDefinition Width="3*" />
-                                            <ColumnDefinition Width="Auto" MaxWidth="50" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock
-                                            Text="{x:Bind FileName}"
-                                            Padding="10,4"
-                                            Grid.Column="0"
-                                            TextTrimming="CharacterEllipsis"
-                                            VerticalAlignment="Center" />
-                                        <TextBlock
-                                            Text="{x:Bind Status}"
-                                            Padding="10,4"
-                                            Grid.Column="1"
-                                            VerticalAlignment="Center" />
-                                        <HyperlinkButton
-                                            Content="{x:Bind URL}"
-                                            NavigateUri="{x:Bind URL}"
-                                            Padding="10,4"
-                                            Grid.Column="2"
-                                            HorizontalAlignment="Stretch"
-                                            HorizontalContentAlignment="Left"
-                                            VerticalAlignment="Center" />
-                                        <Button
-                                            Click="DeleteButton_Click"
-                                            Grid.Column="3"
-                                            Style="{StaticResource IconButton}"
-                                            VerticalAlignment="Center"
-                                            HorizontalAlignment="Right"
-                                            Margin="0"
-                                            Padding="8">
-                                            <FontIcon FontSize="12" Glyph="&#xE74D;" />
-                                        </Button>
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+        <Grid>
+            <Border Grid.Row="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Margin="20,280,20,20" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" muxc:Grid.ColumnSpan="3">
+                <ScrollViewer HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <TextBlock Name="noHistory" Text="Uploaded files will appear here" FontStyle="Italic" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="2" />
+                        <Grid Name="filesGrid" Margin="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" MaxWidth="200" />
+                                <ColumnDefinition Width="2*" MaxWidth="200" />
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="Auto" MaxWidth="50" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <StackPanel>
+                                    <TextBlock Text="File Name" FontWeight="Bold" HorizontalAlignment="Left" Padding="10,5" />
+                                    <ItemsControl ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="shared:UploadedFile">
+                                                <TextBlock Text="{x:Bind FileName}" Padding="10,5" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Column="1">
+                                <StackPanel>
+                                    <TextBlock Text="Status" FontWeight="Bold" HorizontalAlignment="Left" Padding="10,5" />
+                                    <ItemsControl ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="shared:UploadedFile">
+                                                <TextBlock Text="{x:Bind Status}" Padding="10,5" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Column="2">
+                                <StackPanel>
+                                    <TextBlock Text="URL" FontWeight="Bold" HorizontalAlignment="Left" Padding="10,5" />
+                                    <ItemsControl ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="shared:UploadedFile">
+                                                <HyperlinkButton Content="{x:Bind URL}" NavigateUri="{x:Bind URL}" Padding="10,5" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Grid.Column="3">
+                                <StackPanel>
+                                    <TextBlock Width="34" Margin="0,9,0,0" />
+                                    <ItemsControl ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="shared:UploadedFile">
+                                                <Button Click="DeleteButton_Click" Width="33" Height="33" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left">
+                                                    <FontIcon FontSize="12" Glyph="&#xE74D;" />
+                                                </Button>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </ScrollViewer>
-        </Border>
+                </ScrollViewer>
+            </Border>
+        </Grid>
     </Grid>
 </Page>
