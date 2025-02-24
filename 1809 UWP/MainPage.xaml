@@ -10,7 +10,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <Border x:Name="AppTitleBar" VerticalAlignment="Top" Background="{ThemeResource SystemChromeMediumLowColor}">
+        <Border x:Name="AppTitleBar" VerticalAlignment="Top" Background="Transparent">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,6">
                 <FontIcon Glyph="&#xE898;" VerticalAlignment="Center" Margin="0,0,8,0" FontFamily="Segoe MDL2 Assets" />
                 <TextBlock x:Name="AppTitle" Text="QuickUp Tool" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" />
@@ -74,7 +74,8 @@
                                         TextAlignment="Center"
                                         FontFamily="Segoe MDL2 Assets"
                                         FontSize="20"
-                                        Padding="10" />
+                                        Padding="10" 
+                                        Foreground="{ThemeResource DefaultTextForegroundThemeBrush}"/>
                                 </Viewbox>
                             </Grid>
                         </muxc:Button>
@@ -84,7 +85,9 @@
         </Grid>
 
         <Border
-            Background="{ThemeResource SystemChromeMediumLowColor}"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
             CornerRadius="8"
             Margin="20,280,20,20"
             VerticalAlignment="Stretch"
