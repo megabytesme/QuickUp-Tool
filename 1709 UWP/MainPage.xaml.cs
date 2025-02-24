@@ -85,16 +85,9 @@ namespace _1709_UWP
 
         private async void AddToHistory(string fileName, string status, string url)
         {
-            if (Uri.TryCreate(url, UriKind.Absolute, out var validUri))
-            {
-                UploadedFiles.Add(new UploadedFile { FileName = fileName, Status = status, URL = validUri.ToString() });
-                await FileManager.SaveHistoryAsync(UploadedFiles.ToList());
-                this.noHistory.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine($"Invalid URL: {url}");
-            }
+            UploadedFiles.Add(new UploadedFile { FileName = fileName, Status = status, URL = url });
+            await FileManager.SaveHistoryAsync(UploadedFiles.ToList());
+            this.noHistory.Visibility = Visibility.Collapsed;
         }
 
         private async void ProgressRingButton_Click(object sender, RoutedEventArgs e)
@@ -131,28 +124,44 @@ namespace _1709_UWP
             progressRingButton.IsEnabled = false;
             progressRingButton.FontFamily = new FontFamily("XamlAutoFontFamily");
             progressRingButton.Content = "Uploading" + Environment.NewLine + file.Name;
+            string url = null;
 
-            string url = await UploadManager.UploadFile(file, ReportProgress);
-
-            progressRingButton.IsEnabled = true;
-            this.progressRingButton.Content = uploadIcon;
-
-            this.filesGrid.Visibility = Visibility.Visible;
-
-            if (!string.IsNullOrEmpty(url))
+            try
             {
-                AddToHistory(file.Name, "Successful", url);
+                url = await UploadManager.UploadFile(file, ReportProgress);
 
-                var dataPackage = new DataPackage();
-                dataPackage.SetText(url);
-                Clipboard.SetContent(dataPackage);
+                if (!string.IsNullOrEmpty(url))
+                {
+                    AddToHistory(file.Name, "Successful", url);
+
+                    var dataPackage = new DataPackage();
+                    dataPackage.SetText(url);
+                    Clipboard.SetContent(dataPackage);
+                }
             }
-            else
+            catch (Exception ex)
             {
+                await ShowUploadErrorDialog(ex.Message);
                 AddToHistory(file.Name, "Unsuccessful - Failed", "N/A");
             }
+            finally
+            {
+                progressRingButton.IsEnabled = true;
+                this.progressRingButton.Content = uploadIcon;
+                this.progressBar.Value = 0;
+            }
+        }
 
-            this.progressBar.Value = 0;
+        private async Task ShowUploadErrorDialog(string errorMessage)
+        {
+            ContentDialog errorDialog = new ContentDialog
+            {
+                Title = "Upload Error",
+                Content = $"File upload failed. Error: {errorMessage}",
+                CloseButtonText = "OK"
+            };
+
+            await errorDialog.ShowAsync();
         }
 
         private async void ReportProgress(long bytesSent, long totalBytes)
