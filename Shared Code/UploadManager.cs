@@ -15,6 +15,7 @@ namespace QuickUp.Shared
     {
         public static async Task<string> UploadFile(StorageFile file, Action<long, long> reportProgress)
         {
+            UploadedFile uploadedFileInfo = null;
             try
             {
                 const ulong twoGB = 2UL * 1024 * 1024 * 1024;
@@ -23,8 +24,15 @@ namespace QuickUp.Shared
 
                 if (fileSize > twoGB)
                 {
-                    return null;
+                    throw new Exception("File size exceeds the limit of 2GB.");
                 }
+
+                uploadedFileInfo = new UploadedFile
+                {
+                    FileName = file.Name,
+                    Status = "Uploading"
+                };
+                await InsertUploadedFile(uploadedFileInfo);
 
                 var uri = new Uri("https://file.io/");
                 var httpClient = new HttpClient();
@@ -48,20 +56,38 @@ namespace QuickUp.Shared
 
                         if (Uri.TryCreate(urlString, UriKind.Absolute, out Uri validUri))
                         {
+                            uploadedFileInfo.URL = validUri.ToString();
+                            uploadedFileInfo.Status = "Uploaded";
+                            await UpdateUploadedFile(uploadedFileInfo);
                             return validUri.ToString();
                         }
                         else
                         {
+                            uploadedFileInfo.Status = "Upload Failed - Invalid URL";
+                            await UpdateUploadedFile(uploadedFileInfo);
                             System.Diagnostics.Debug.WriteLine($"Invalid URL: {urlString}");
+                            throw new Exception("Upload was successful but the returned URL is invalid.");
                         }
                     }
+                }
+                else
+                {
+                    uploadedFileInfo.Status = "Upload Failed - HTTP Error";
+                    await UpdateUploadedFile(uploadedFileInfo);
+                    System.Diagnostics.Debug.WriteLine($"Upload failed with status code: {response.StatusCode}");
+                    throw new Exception($"Upload failed with HTTP status code: {response.StatusCode}.");
                 }
             }
             catch (Exception ex)
             {
+                if (uploadedFileInfo != null)
+                {
+                    uploadedFileInfo.Status = "Upload Failed - " + ex.Message;
+                    await UpdateUploadedFile(uploadedFileInfo);
+                }
                 System.Diagnostics.Debug.WriteLine($"Error in UploadFile: {ex.Message}");
+                throw;
             }
-            return null;
         }
 
         public class ProgressableStreamContent : HttpContent
@@ -112,6 +138,24 @@ namespace QuickUp.Shared
         {
             [DataMember]
             public string link { get; set; }
+        }
+
+        private static DatabaseService _databaseService = new DatabaseService();
+
+        private static async Task InsertUploadedFile(UploadedFile file)
+        {
+            await Task.Run(() =>
+            {
+                _databaseService.Connection.Insert(file);
+            });
+        }
+
+        private static async Task UpdateUploadedFile(UploadedFile file)
+        {
+            await Task.Run(() =>
+            {
+                _databaseService.Connection.Update(file);
+            });
         }
     }
 }
