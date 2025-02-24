@@ -150,13 +150,14 @@ namespace _1809_UWP
         private async Task HandleFile(StorageFile file)
         {
             progressRingButton.IsEnabled = false;
-            progressRingButton.FontFamily = new FontFamily("XamlAutoFontFamily");
-            progressRingButton.Content = "Uploading" + Environment.NewLine + file.Name;
+            buttonText.FontFamily = new FontFamily("XamlAutoFontFamily");
+            buttonText.Text = "Uploading" + Environment.NewLine + file.Name;
 
             string url = await UploadManager.UploadFile(file, ReportProgress);
 
             progressRingButton.IsEnabled = true;
-            this.progressRingButton.Content = uploadIcon;
+            buttonText.FontFamily = uploadIcon.FontFamily;
+            buttonText.Text = uploadIcon.Glyph;
 
             this.filesGrid.Visibility = Visibility.Visible;
 
