@@ -25,14 +25,17 @@ namespace _1709_UWP
             HorizontalAlignment = HorizontalAlignment.Center
         };
 
-        public ObservableCollection<UploadedFile> UploadedFiles { get; } = new ObservableCollection<UploadedFile>();
+        public ObservableCollection<UploadedFile> UploadedFiles { get; } = UploadRepository.Instance.UploadedFiles;
+        private readonly UploadService _uploadService;
 
         public MainPage()
         {
             this.InitializeComponent();
             ExtendViewIntoTitleBar();
             SetTitleBarBackground();
-            _ = LoadHistoryAsync();
+            LoadHistory();
+            var uploadManager = new UploadManager(UploadRepository.Instance);
+            _uploadService = new UploadService(uploadManager, UploadRepository.Instance);
         }
 
         private void ExtendViewIntoTitleBar()
@@ -49,19 +52,14 @@ namespace _1709_UWP
             Window.Current.SetTitleBar(AppTitleBar);
         }
 
-        private async Task LoadHistoryAsync()
+        private void LoadHistory()
         {
-            this.filesGrid.Visibility = Visibility.Collapsed;
-            var uploadedFiles = await FileManager.LoadHistoryAsync();
-            if (uploadedFiles.Any())
+            this.filesListView.Visibility = Visibility.Collapsed;
+
+            if (UploadedFiles.Any())
             {
                 this.noHistory.Visibility = Visibility.Collapsed;
-                this.filesGrid.Visibility = Visibility.Visible;
-                foreach (var file in uploadedFiles)
-                {
-                    UploadedFiles.Add(file);
-                    System.Diagnostics.Debug.WriteLine($"Loaded: {file.FileName}, {file.Status}, {file.URL}");
-                }
+                this.filesListView.Visibility = Visibility.Visible;
             }
             else
             {
@@ -73,21 +71,13 @@ namespace _1709_UWP
         {
             if (sender is Button button && button.DataContext is UploadedFile file)
             {
-                UploadedFiles.Remove(file);
-                if (UploadedFiles.Count == 0)
+                UploadRepository.Instance.DeleteUploadedFile(file);
+                if (!UploadedFiles.Any())
                 {
                     this.noHistory.Visibility = Visibility.Visible;
-                    this.filesGrid.Visibility = Visibility.Collapsed;
+                    this.filesListView.Visibility = Visibility.Collapsed;
                 }
-                await FileManager.SaveHistoryAsync(UploadedFiles.ToList());
             }
-        }
-
-        private async void AddToHistory(string fileName, string status, string url)
-        {
-            UploadedFiles.Add(new UploadedFile { FileName = fileName, Status = status, URL = url });
-            await FileManager.SaveHistoryAsync(UploadedFiles.ToList());
-            this.noHistory.Visibility = Visibility.Collapsed;
         }
 
         private async void ProgressRingButton_Click(object sender, RoutedEventArgs e)
@@ -110,10 +100,12 @@ namespace _1709_UWP
                 var items = await e.DataView.GetStorageItemsAsync();
                 if (items.Any())
                 {
-                    var storageFile = items[0] as StorageFile;
-                    if (storageFile != null)
+                    foreach (var item in items)
                     {
-                        await HandleFile(storageFile);
+                        if (item is StorageFile storageFile)
+                        {
+                            await HandleFile(storageFile);
+                        }
                     }
                 }
             }
@@ -125,24 +117,24 @@ namespace _1709_UWP
             progressRingButton.FontFamily = new FontFamily("XamlAutoFontFamily");
             progressRingButton.Content = "Uploading" + Environment.NewLine + file.Name;
             string url = null;
+            UploadResult uploadResult = null;
+
+            var progressIndicator = new Progress<double>(ReportProgress);
 
             try
             {
-                url = await UploadManager.UploadFile(file, ReportProgress);
-
-                if (!string.IsNullOrEmpty(url))
+                uploadResult = await _uploadService.ProcessFileAsync(file, progressIndicator);
+                if (uploadResult.IsSuccessful && !string.IsNullOrEmpty(uploadResult.Url))
                 {
-                    AddToHistory(file.Name, "Successful", url);
-
+                    url = uploadResult.Url;
                     var dataPackage = new DataPackage();
                     dataPackage.SetText(url);
                     Clipboard.SetContent(dataPackage);
                 }
-            }
-            catch (Exception ex)
-            {
-                await ShowUploadErrorDialog(ex.Message);
-                AddToHistory(file.Name, "Unsuccessful - Failed", "N/A");
+                else
+                {
+                    await ShowUploadErrorDialog(uploadResult.ErrorMessage ?? "Unknown upload error.");
+                }
             }
             finally
             {
@@ -164,18 +156,11 @@ namespace _1709_UWP
             await errorDialog.ShowAsync();
         }
 
-        private async void ReportProgress(long bytesSent, long totalBytes)
+        private void ReportProgress(double percentage)
         {
-            if (totalBytes == 0)
+            progressBar.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                return;
-            }
-
-            double progressPercentage = (double)bytesSent / totalBytes * 100;
-
-            await progressBar.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-            {
-                progressBar.Value = (int)Math.Min(progressPercentage, 100);
+                progressBar.Value = (int)Math.Min(percentage, 100);
             });
         }
 
