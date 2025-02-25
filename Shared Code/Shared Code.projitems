@@ -9,14 +9,20 @@
     <Import_RootNamespace>Shared_Code</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)FileInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DatabaseService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BinInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadedFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FileBinResponseObject.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UploadService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\FileInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\DatabaseService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\BinInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\UploadedFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Managers\UploadManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\UploadRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\FileBinResponseObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\UploadResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\UploadService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Data\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Managers\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Services\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Repositories\" />
   </ItemGroup>
 </Project>
