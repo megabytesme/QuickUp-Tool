@@ -99,69 +99,113 @@
             </Grid>
 
             <Border Grid.Row="1"
-                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    Margin="20,10,20,20"
-                    VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch"
-                    Padding="12"
-                    CornerRadius="8"
-                    BorderThickness="1">
-                <ScrollViewer HorizontalScrollMode="Auto"
-                              HorizontalScrollBarVisibility="Auto"
-                              VerticalScrollMode="Auto"
-                              VerticalScrollBarVisibility="Auto">
+        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+        Margin="20,10,20,20"
+        VerticalAlignment="Stretch"
+        HorizontalAlignment="Stretch"
+        Padding="12"
+        CornerRadius="8"
+        BorderThickness="1">
+                <ScrollViewer HorizontalScrollMode="Disabled"
+                  HorizontalScrollBarVisibility="Hidden"
+                  VerticalScrollMode="Auto"
+                  VerticalScrollBarVisibility="Auto">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <TextBlock Name="noHistory"
-                                   Text="Uploaded files will appear here"
-                                   FontStyle="Italic"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Margin="24"
-                                   Opacity="0.5"/>
+                       Text="Uploaded files will appear here"
+                       FontStyle="Italic"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Margin="24"
+                       Opacity="0.5"/>
                         <ListView x:Name="filesListView"
-                                  ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}"
-                                  Visibility="Visible"
-                                  MinHeight="200"
-                                  Margin="8">
+                      ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}"
+                      Visibility="Visible"
+                      MinHeight="200"
+                      Margin="8">
                             <ListView.Header>
                                 <Grid ColumnSpacing="8" Padding="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200"/>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="300"/>
-                                        <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="2*" MinWidth="150"/>
+                                        <ColumnDefinition Width="1*" MinWidth="80"/>
+                                        <ColumnDefinition Width="3*" MinWidth="200"/>
+                                        <ColumnDefinition Width="1.5*" MinWidth="120"/>
+                                        <ColumnDefinition Width="1.5*" MinWidth="100"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="File Name" FontWeight="SemiBold" Grid.Column="0"/>
-                                    <TextBlock Text="Status" FontWeight="SemiBold" Grid.Column="1"/>
-                                    <TextBlock Text="URL" FontWeight="SemiBold" Grid.Column="2"/>
-                                    <TextBlock Text="Expiry Date" FontWeight="SemiBold" Grid.Column="3"/>
-                                    <TextBlock Text="File Size" FontWeight="SemiBold" Grid.Column="4"/>
+                                    <TextBlock Text="File Name" FontWeight="SemiBold" Grid.Column="0" TextAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Status" FontWeight="SemiBold" Grid.Column="1" TextAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="URL" FontWeight="SemiBold" Grid.Column="2" TextAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Expiry Date" FontWeight="SemiBold" Grid.Column="3" TextAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="File Size" FontWeight="SemiBold" Grid.Column="4" TextAlignment="Center" HorizontalAlignment="Center"/>
                                 </Grid>
                             </ListView.Header>
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="shared:UploadedFile">
                                     <Grid ColumnSpacing="8" Padding="12">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="200"/>
-                                            <ColumnDefinition Width="100"/>
-                                            <ColumnDefinition Width="300"/>
-                                            <ColumnDefinition Width="150"/>
-                                            <ColumnDefinition Width="150"/>
-                                            <ColumnDefinition Width="33"/>
+                                            <ColumnDefinition Width="2*" MinWidth="150"/>
+                                            <ColumnDefinition Width="1*" MinWidth="80"/>
+                                            <ColumnDefinition Width="3*" MinWidth="200"/>
+                                            <ColumnDefinition Width="1.5*" MinWidth="120"/>
+                                            <ColumnDefinition Width="1.5*" MinWidth="100"/>
+                                            <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{x:Bind FileName}" Grid.Column="0"/>
-                                        <TextBlock Text="{x:Bind Status}" Grid.Column="1"/>
-                                        <HyperlinkButton Grid.Column="2">
+                                        <TextBlock Text="{x:Bind FileName}" 
+                                            Grid.Column="0"
+                                            TextWrapping="Wrap"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            MaxWidth="250"/>
+
+                                        <TextBlock Text="{x:Bind Status}" 
+                                            Grid.Column="1"
+                                            TextWrapping="Wrap"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            MaxWidth="120"/>
+
+                                        <HyperlinkButton Grid.Column="2" MaxWidth="300" HorizontalAlignment="Center">
                                             <HyperlinkButton.Content>
-                                                <TextBlock Text="{x:Bind URL}"/>
+                                                <TextBlock Text="{x:Bind URL}" 
+                                                    TextWrapping="Wrap"
+                                                    TextTrimming="None"
+                                                    TextAlignment="Center"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"/>
                                             </HyperlinkButton.Content>
                                         </HyperlinkButton>
-                                        <TextBlock Text="{x:Bind ExpiryDate}" Grid.Column="3"/>
-                                        <TextBlock Text="{x:Bind FileSizeReadable}" Grid.Column="4"/>
-                                        <Button Click="DeleteButton_Click" Grid.Column="5" Width="34" Height="34">
+
+                                        <TextBlock Text="{x:Bind ExpiryDate}" 
+                                            Grid.Column="3"
+                                            TextWrapping="Wrap"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            MaxWidth="150"/>
+
+                                        <TextBlock Text="{x:Bind FileSizeReadable}" 
+                                            Grid.Column="4"
+                                            TextWrapping="Wrap"
+                                            TextTrimming="CharacterEllipsis"
+                                            TextAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            MaxWidth="120"/>
+
+                                        <Button Click="DeleteButton_Click" 
+                                            Grid.Column="5" 
+                                            Width="36" 
+                                            Height="36"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
                                             <FontIcon FontSize="12" Glyph="&#xE74D;"/>
                                         </Button>
                                     </Grid>
