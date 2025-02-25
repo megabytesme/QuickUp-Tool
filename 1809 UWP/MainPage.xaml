@@ -10,207 +10,159 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <Border x:Name="AppTitleBar" VerticalAlignment="Top" Background="Transparent">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="AppTitleBar" Background="Transparent" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
+                <ColumnDefinition/>
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20,0,0,0">
                 <FontIcon Glyph="&#xE898;" VerticalAlignment="Center" Margin="0,0,8,0" FontFamily="Segoe MDL2 Assets" />
                 <TextBlock x:Name="AppTitle" Text="QuickUp Tool" VerticalAlignment="Center" Style="{ThemeResource CaptionTextBlockStyle}" />
             </StackPanel>
-        </Border>
+        </Grid>
 
-        <Grid Margin="0,48,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <Grid
-                Width="200"
-                Height="200"
-                Grid.ColumnSpan="2"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Center">
-
-                <Border
-                    Width="200"
-                    Height="200"
-                    CornerRadius="100"
-                    Background="Transparent">
-                    <Grid>
-                        <ProgressBar
-                            Name="progressBar"
+        <AutoSuggestBox x:Name="SearchBox"
+                            QueryIcon="Find"
+                            PlaceholderText="Search uploads..."
                             Width="200"
-                            Height="200"
-                            Minimum="0"
-                            Maximum="100"
-                            Value="0"
-                            BorderThickness="0"
-                            Background="{ThemeResource ProgressBarBackgroundThemeBrush}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"/>
-                        <Ellipse
-                            Width="160"
-                            Height="160"
-                            Fill="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center" />
-                        <muxc:Button
-                            x:Name="progressRingButton"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Click="ProgressRingButton_Click"
-                            AllowDrop="True"
-                            DragOver="ProgressRingButton_DragOver"
-                            Drop="ProgressRingButton_Drop"
-                            CornerRadius="100"
-                            Foreground="Black"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Height="200"
-                            Width="200">
+                            CornerRadius="8"
+                            Height="32"
+                            Background="{ThemeResource TextControlBackground}"
+                            BorderBrush="{ThemeResource AccentFillColorDefaultBrush}"
+                            TextChanged="SearchBox_TextChanged"
+                            Grid.Column="1"/>
+
+        <Grid Grid.Row="2" Margin="0,10,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center">
+                <Border Width="200" Height="200" CornerRadius="100" Background="Transparent">
+                    <Grid>
+                        <ProgressBar Name="progressBar"
+                                     Width="200"
+                                     Height="200"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     Value="0"
+                                     BorderThickness="0"
+                                     Background="{ThemeResource ProgressBarBackgroundThemeBrush}"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+                        <Ellipse Width="160"
+                                 Height="160"
+                                 Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"/>
+                        <muxc:Button x:Name="progressRingButton"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     Click="ProgressRingButton_Click"
+                                     AllowDrop="True"
+                                     DragOver="ProgressRingButton_DragOver"
+                                     Drop="ProgressRingButton_Drop"
+                                     CornerRadius="100"
+                                     Foreground="Black"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"
+                                     Height="200"
+                                     Width="200">
                             <Grid>
                                 <Ellipse Fill="Transparent" Width="160" Height="160" />
                                 <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <TextBlock
-                                        x:Name="buttonText"
-                                        Text="&#xE898;"
-                                        TextWrapping="Wrap"
-                                        TextAlignment="Center"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        FontSize="20"
-                                        Padding="10" 
-                                        Foreground="{ThemeResource DefaultTextForegroundThemeBrush}"/>
+                                    <TextBlock x:Name="buttonText"
+                                               Text="&#xE898;"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Center"
+                                               FontFamily="Segoe MDL2 Assets"
+                                               FontSize="20"
+                                               Padding="10"
+                                               Foreground="{ThemeResource DefaultTextForegroundThemeBrush}"/>
                                 </Viewbox>
                             </Grid>
                         </muxc:Button>
                     </Grid>
                 </Border>
             </Grid>
-        </Grid>
 
-        <Grid>
             <Border Grid.Row="1"
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"            
-            Margin="20,280,20,20"
-            VerticalAlignment="Stretch"
-            HorizontalAlignment="Stretch"
-            muxc:Grid.ColumnSpan="3"
-            Padding="12"
-            CornerRadius="8"
-            BorderThickness="1">
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    Margin="20,10,20,20"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    Padding="12"
+                    CornerRadius="8"
+                    BorderThickness="1">
                 <ScrollViewer HorizontalScrollMode="Auto"
-                      HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollMode="Auto"
-                      VerticalScrollBarVisibility="Auto">
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollMode="Auto"
+                              VerticalScrollBarVisibility="Auto">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <TextBlock Name="noHistory"
-                           Text="Uploaded files will appear here"
-                           FontStyle="Italic"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"
-                           Margin="24"
-                           Opacity="0.5"/>
+                                   Text="Uploaded files will appear here"
+                                   FontStyle="Italic"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Margin="24"
+                                   Opacity="0.5"/>
                         <ListView x:Name="filesListView"
-                          ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}"
-                          Visibility="Visible"
-                          Margin="8">
+                                  ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}"
+                                  Visibility="Visible"
+                                  MinHeight="200"
+                                  Margin="8">
                             <ListView.Header>
                                 <Grid ColumnSpacing="8" Padding="12">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200" />
-                                        <ColumnDefinition Width="100" />
-                                        <ColumnDefinition Width="300" />
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="300"/>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="150"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="File Name"
-                                       FontWeight="SemiBold"
-                                       Grid.Column="0"
-                                       Padding="0"
-                                       Width="200"
-                                       TextWrapping="Wrap"/>
-                                    <TextBlock Text="Status"
-                                       FontWeight="SemiBold"
-                                       Grid.Column="1"
-                                       Padding="0"
-                                       Width="100"
-                                       TextWrapping="Wrap"/>
-                                    <TextBlock Text="URL"
-                                       FontWeight="SemiBold"
-                                       Grid.Column="2"
-                                       Padding="0"
-                                       Width="300"
-                                       TextWrapping="Wrap"/>
-                                    <TextBlock Text="Expiry Date"
-                                       FontWeight="SemiBold"
-                                       Grid.Column="3"
-                                       Padding="0"
-                                       Width="150"
-                                       TextWrapping="Wrap"/>
-                                    <TextBlock Text="File Size"
-                                       FontWeight="SemiBold"
-                                       Grid.Column="4"
-                                       Padding="0"
-                                       Width="150"
-                                       TextWrapping="Wrap"/>
-                                    <TextBlock Grid.Column="5" Width="34" Margin="0,3,0,0" />
+                                    <TextBlock Text="File Name" FontWeight="SemiBold" Grid.Column="0"/>
+                                    <TextBlock Text="Status" FontWeight="SemiBold" Grid.Column="1"/>
+                                    <TextBlock Text="URL" FontWeight="SemiBold" Grid.Column="2"/>
+                                    <TextBlock Text="Expiry Date" FontWeight="SemiBold" Grid.Column="3"/>
+                                    <TextBlock Text="File Size" FontWeight="SemiBold" Grid.Column="4"/>
                                 </Grid>
                             </ListView.Header>
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="shared:UploadedFile">
                                     <Grid ColumnSpacing="8" Padding="12">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="200" />
-                                            <ColumnDefinition Width="100" />
-                                            <ColumnDefinition Width="300" />
-                                            <ColumnDefinition Width="150" />
-                                            <ColumnDefinition Width="150" />
-                                            <ColumnDefinition Width="33" />
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="300"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="33"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{x:Bind FileName}"
-                                           VerticalAlignment="Center"
-                                           Grid.Column="0"
-                                           Padding="0"
-                                           Width="200"
-                                           TextWrapping="Wrap"/>
-                                        <TextBlock Text="{x:Bind Status}"
-                                           VerticalAlignment="Center"
-                                           Grid.Column="1"
-                                           Padding="0"
-                                           Width="100"
-                                           TextWrapping="Wrap"/>
-                                        <HyperlinkButton Grid.Column="2"
-                                                 Padding="0"
-                                                 HorizontalContentAlignment="Left"
-                                                 Width="300"
-                                                 VerticalAlignment="Center">
+                                        <TextBlock Text="{x:Bind FileName}" Grid.Column="0"/>
+                                        <TextBlock Text="{x:Bind Status}" Grid.Column="1"/>
+                                        <HyperlinkButton Grid.Column="2">
                                             <HyperlinkButton.Content>
-                                                <TextBlock Text="{x:Bind URL}"
-                                                   TextWrapping="Wrap"/>
+                                                <TextBlock Text="{x:Bind URL}"/>
                                             </HyperlinkButton.Content>
                                         </HyperlinkButton>
-                                        <TextBlock Text="{x:Bind ExpiryDate}"
-                                           VerticalAlignment="Center"
-                                           Grid.Column="3"
-                                           Padding="0"
-                                           Width="150"
-                                           TextWrapping="Wrap"/>
-                                        <TextBlock Text="{x:Bind FileSizeReadable}"
-                                           VerticalAlignment="Center"
-                                           Grid.Column="4"
-                                           Padding="0"
-                                           Width="150"
-                                           TextWrapping="Wrap"/>
-                                        <Button Click="DeleteButton_Click"
-                                        VerticalAlignment="Center"
-                                        Grid.Column="5"
-                                        Width="34"
-                                        Height="34"
-                                        Background="Transparent"
-                                        BorderThickness="0"
-                                        HorizontalAlignment="Right">
-                                            <FontIcon FontSize="12" Glyph="&#xE74D;" />
+                                        <TextBlock Text="{x:Bind ExpiryDate}" Grid.Column="3"/>
+                                        <TextBlock Text="{x:Bind FileSizeReadable}" Grid.Column="4"/>
+                                        <Button Click="DeleteButton_Click" Grid.Column="5" Width="34" Height="34">
+                                            <FontIcon FontSize="12" Glyph="&#xE74D;"/>
                                         </Button>
                                     </Grid>
                                 </DataTemplate>
@@ -218,6 +170,20 @@
                         </ListView>
                     </Grid>
                 </ScrollViewer>
+            </Border>
+
+            <Border Grid.Row="2"
+                    Padding="12"
+                    Margin="20,0,20,20"
+                    CornerRadius="8"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    VerticalAlignment="Bottom">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16">
+                    <Button Content="About" Click="AboutButton_Click" Width="100" CornerRadius="4"/>
+                    <Button Content="Delete All" Click="DeleteAllButton_Click" Width="100" CornerRadius="4"/>
+                </StackPanel>
             </Border>
         </Grid>
     </Grid>

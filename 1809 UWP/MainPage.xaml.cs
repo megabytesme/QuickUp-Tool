@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using QuickUp.Shared;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 
 namespace _1809_UWP
@@ -29,6 +31,8 @@ namespace _1809_UWP
 
         public ObservableCollection<UploadedFile> UploadedFiles { get; } = UploadRepository.Instance.UploadedFiles;
         private readonly UploadService _uploadService;
+        private string _filter;
+        private List<UploadedFile> _originalFiles;
 
         public MainPage()
         {
@@ -145,6 +149,7 @@ namespace _1809_UWP
             try
             {
                 uploadResult = await _uploadService.ProcessFileAsync(file, progressIndicator);
+                LoadHistory();
                 if (uploadResult.IsSuccessful && !string.IsNullOrEmpty(uploadResult.Url))
                 {
                     url = uploadResult.Url;
@@ -188,6 +193,142 @@ namespace _1809_UWP
         private void ProgressRingButton_DragOver(object sender, DragEventArgs e)
         {
             e.AcceptedOperation = DataPackageOperation.Copy;
+        }
+
+        private async void DeleteAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            var filesToDelete = UploadedFiles.ToList();
+            foreach (var file in filesToDelete)
+            {
+                UploadRepository.Instance.DeleteUploadedFile(file);
+            }
+            LoadHistory();
+            this.noHistory.Visibility = Visibility.Visible;
+            this.filesListView.Visibility = Visibility.Collapsed;
+            UploadedFiles.Clear();
+        }
+
+        private async void AboutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new ContentDialog
+            {
+                Title = "About QuickUp Tool",
+                Content = new ScrollViewer()
+                {
+                    Content = new TextBlock()
+                    {
+                        Inlines =
+                        {
+                            new Run() { Text = "QuickUp Tool" },
+                            new LineBreak(),
+                            new Run() { Text = "Version 2.0.2.0 (1809_UWP)" },
+                            new LineBreak(),
+                            new Run() { Text = "Copyright © 2025 MegaBytesMe" },
+                            new LineBreak(),
+                            new Run() { Text = " "},
+                            new LineBreak(),
+                            new Run() { Text = "Source code available on " },
+                            new Hyperlink()
+                            {
+                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool"),
+                                Inlines = { new Run() { Text = "GitHub" } }
+                            },
+                            new LineBreak(),
+                            new Run() { Text = "Anything wrong? Let us know: " },
+                            new Hyperlink()
+                            {
+                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool/issues"),
+                                Inlines = { new Run() { Text = "Support" } }
+                            },
+                            new LineBreak(),
+                            new Run() { Text = "Privacy Policy: " },
+                            new Hyperlink()
+                            {
+                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool/blob/master/PRIVACYPOLICY.md"),
+                                Inlines = { new Run() { Text = "Privacy Policy" } }
+                            },
+                            new LineBreak(),
+                            new Run() { Text = "Like what you see? View my " },
+                            new Hyperlink()
+                            {
+                                NavigateUri = new Uri("https://github.com/megabytesme"),
+                                Inlines = { new Run() { Text = "GitHub" } }
+                            },
+                            new Run() { Text = " and maybe my " },
+                            new Hyperlink()
+                            {
+                                NavigateUri = new Uri("https://apps.microsoft.com/search?query=megabytesme"),
+                                Inlines = { new Run() { Text = "Other Apps" } }
+                            },
+                            new LineBreak(),
+                            new Run() { Text = " "},
+                            new LineBreak(),
+                            new Run() { Text = "QuickUp Tool is a Windows utility which allows you to quickly upload files without needing an account." }
+                        },
+                        TextWrapping = TextWrapping.Wrap
+                    }
+                },
+                CloseButtonText = "OK"
+            };
+
+            await dialog.ShowAsync();
+        }
+
+        private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                _filter = sender.Text.ToLowerInvariant();
+                if (_originalFiles == null)
+                {
+                    _originalFiles = UploadedFiles.ToList();
+                }
+                RefreshFileList();
+            }
+        }
+
+        private void RefreshFileList()
+        {
+            UploadedFiles.Clear();
+            if (string.IsNullOrEmpty(_filter))
+            {
+                if (_originalFiles != null)
+                {
+                    foreach (var file in _originalFiles)
+                    {
+                        UploadedFiles.Add(file);
+                    }
+                }
+                else
+                {
+                    LoadHistory();
+                }
+
+            }
+            else
+            {
+                if (_originalFiles != null)
+                {
+                    foreach (var file in _originalFiles)
+                    {
+                        if (file.FileName.ToLowerInvariant().Contains(_filter))
+                        {
+                            UploadedFiles.Add(file);
+                        }
+                    }
+                }
+            }
+
+            if (!UploadedFiles.Any())
+            {
+                this.noHistory.Visibility = Visibility.Visible;
+                this.filesListView.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                this.noHistory.Visibility = Visibility.Collapsed;
+                this.filesListView.Visibility = Visibility.Visible;
+            }
         }
     }
 }
