@@ -107,8 +107,8 @@
         Padding="12"
         CornerRadius="8"
         BorderThickness="1">
-                <ScrollViewer HorizontalScrollMode="Disabled"
-                  HorizontalScrollBarVisibility="Hidden"
+                <ScrollViewer HorizontalScrollMode="Auto"
+                  HorizontalScrollBarVisibility="Auto"
                   VerticalScrollMode="Auto"
                   VerticalScrollBarVisibility="Auto">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -132,7 +132,7 @@
                                         <ColumnDefinition Width="3*" MinWidth="200"/>
                                         <ColumnDefinition Width="1.5*" MinWidth="120"/>
                                         <ColumnDefinition Width="1.5*" MinWidth="100"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="1*" MinWidth="80"/>
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="File Name" FontWeight="SemiBold" Grid.Column="0" TextAlignment="Center" HorizontalAlignment="Center"/>
                                     <TextBlock Text="Status" FontWeight="SemiBold" Grid.Column="1" TextAlignment="Center" HorizontalAlignment="Center"/>
@@ -150,7 +150,7 @@
                                             <ColumnDefinition Width="3*" MinWidth="200"/>
                                             <ColumnDefinition Width="1.5*" MinWidth="120"/>
                                             <ColumnDefinition Width="1.5*" MinWidth="100"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="1*" MinWidth="80"/>
                                         </Grid.ColumnDefinitions>
 
                                         <TextBlock Text="{x:Bind FileName}" 
@@ -182,7 +182,7 @@
                                             </HyperlinkButton.Content>
                                         </HyperlinkButton>
 
-                                        <TextBlock Text="{x:Bind ExpiryDate}" 
+                                        <TextBlock Text="{x:Bind DaysUntilExpiry}" 
                                             Grid.Column="3"
                                             TextWrapping="Wrap"
                                             TextTrimming="CharacterEllipsis"
