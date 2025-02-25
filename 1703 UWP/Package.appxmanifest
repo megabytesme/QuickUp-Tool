@@ -9,7 +9,7 @@
   <Identity
     Name="MegaBytesMe.QuickUpTool"
     Publisher="CN=F0BC24FD-E28E-4D47-BEEA-3B6CF444653E"
-    Version="0.0.1.0" />
+    Version="1.0.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="65efbde9-2e3d-4bd7-b539-b6d262ce9d67" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
