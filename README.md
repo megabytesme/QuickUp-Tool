@@ -11,9 +11,7 @@ QuickUp Tool is a lightweight application designed to quickly upload files for f
 - **Clipboard Integration:** Automatically copies the uploaded file's URL to the clipboard.
 
 ## Download
-[![Get it from Microsoft Store](https://img.shields.io/badge/Get%20it%20from-Microsoft%20Store-blue)](https://www.microsoft.com/store/productId/9NPFVNQDX777)
-
-[![Download Latest Release](https://img.shields.io/github/v/release/your-repo/QuickUp)](https://github.com/megabytesme/QuickUp-Tool/releases/latest)
+<a href="https://apps.microsoft.com/detail/9npfvnqdx777"><img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200"/>
 
 ## Build Guide
 
@@ -45,7 +43,7 @@ QuickUp Tool is a lightweight application designed to quickly upload files for f
 
 ## Folder Structure
 
-- `1709 UWP`: UWP app implementation which supports devices on Windows 1709 and above (looking at you W10M) - Uses UWP WinUI. Recommended for Windows 10 Mobile users.
+- `1703 UWP`: UWP app implementation which supports devices on Windows 1703 and above (looking at you W10M) - Uses UWP WinUI. Recommended for Windows 10 Mobile users.
 - `1809 UWP`: UWP app implementation which supports devices on Windows 1809 and above - Uses WinUI 2. Recommended for all Windows device users.
 - `WinUI 3`: WIP - Currently need to sideload and run as Debug! Packaged WinUI 3 app implementation which supports Desktop Windows 1809 and above - Uses WinUI 3 of course. Recommended for experienced Windows Desktop users.
 - `Shared Code`: Project which holds the code shared by all projects.
