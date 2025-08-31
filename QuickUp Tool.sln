@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinUI 3", "WinUI 3\WinUI 3.
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared Code", "Shared Code\Shared Code.shproj", "{918E86CC-C1B6-4684-A507-3EFD0CB5F164}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1703 UWP", "1703 UWP\1703 UWP.csproj", "{5683CD3C-605A-4A40-AB34-BB238BA85289}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1507 UWP", "1507 UWP\1507 UWP.csproj", "{5683CD3C-605A-4A40-AB34-BB238BA85289}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
