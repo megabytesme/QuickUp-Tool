@@ -117,6 +117,34 @@ namespace QuickUp.Shared
             }
         }
 
+        public async Task<bool> DeleteFileAsync(UploadedFile file)
+        {
+            if (file == null || string.IsNullOrEmpty(file.URL))
+            {
+                return true;
+            }
+
+            var deleteUri = new Uri(file.URL);
+
+            try
+            {
+                var response = await _httpClient.DeleteAsync(deleteUri);
+
+                if (response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         private FilebinResponseObject DeserializeFilebinResponse(string responseContent)
         {
             try

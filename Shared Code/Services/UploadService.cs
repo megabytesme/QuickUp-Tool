@@ -132,5 +132,12 @@ namespace QuickUp.Shared
                 };
             }
         }
+
+        public async Task<bool> DeleteRemoteFileAsync(UploadedFile file)
+        {
+            if (file == null) return false;
+
+            return await _uploadManager.DeleteFileAsync(file);
+        }
     }
 }

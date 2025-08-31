@@ -25,7 +25,7 @@ namespace _1809_UWP
 {
     public sealed partial class MainPage : Page
     {
-        private readonly Queue<ContentDialog> _dialogQueue = new Queue<ContentDialog>();
+        private readonly Queue<DialogQueueItem> _dialogQueue = new Queue<DialogQueueItem>();
         private bool _isDialogShowing = false;
         private UploadedFile _fileToShare;
 
@@ -54,13 +54,30 @@ namespace _1809_UWP
             DataTransferManager.GetForCurrentView().DataRequested += OnDataRequested;
         }
 
-        private async Task ShowQueuedDialogAsync(ContentDialog dialog)
+        private class DialogQueueItem
         {
-            _dialogQueue.Enqueue(dialog);
-            await ProcessDialogQueueAsync();
+            public ContentDialog Dialog { get; }
+            public TaskCompletionSource<ContentDialogResult> CompletionSource { get; }
+
+            public DialogQueueItem(ContentDialog dialog)
+            {
+                Dialog = dialog;
+                CompletionSource = new TaskCompletionSource<ContentDialogResult>();
+            }
         }
 
-        private async Task ProcessDialogQueueAsync()
+        private async Task<ContentDialogResult> ShowQueuedDialogAsync(ContentDialog dialog)
+        {
+            var queueItem = new DialogQueueItem(dialog);
+
+            _dialogQueue.Enqueue(queueItem);
+
+            ProcessDialogQueueAsync();
+
+            return await queueItem.CompletionSource.Task;
+        }
+
+        private async void ProcessDialogQueueAsync()
         {
             if (_isDialogShowing || _dialogQueue.Count == 0)
             {
@@ -68,11 +85,25 @@ namespace _1809_UWP
             }
 
             _isDialogShowing = true;
-            ContentDialog dialogToShow = _dialogQueue.Dequeue();
-            await dialogToShow.ShowAsync();
-            _isDialogShowing = false;
+            DialogQueueItem itemToShow = null;
 
-            await ProcessDialogQueueAsync();
+            try
+            {
+                itemToShow = _dialogQueue.Dequeue();
+
+                ContentDialogResult result = await itemToShow.Dialog.ShowAsync();
+
+                itemToShow.CompletionSource.SetResult(result);
+            }
+            catch (Exception ex)
+            {
+                itemToShow?.CompletionSource.TrySetException(ex);
+            }
+            finally
+            {
+                _isDialogShowing = false;
+                ProcessDialogQueueAsync();
+            }
         }
 
         private void ExtendViewIntoTitleBar()
@@ -172,15 +203,53 @@ namespace _1809_UWP
             }
         }
 
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        private async void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is UploadedFile file)
             {
-                UploadRepository.Instance.DeleteUploadedFile(file);
-                if (!UploadedFiles.Any())
+                var confirmationDialog = new ContentDialog
                 {
-                    this.noHistory.Visibility = Visibility.Visible;
-                    this.filesListView.Visibility = Visibility.Collapsed;
+                    Title = "Delete File?",
+                    Content = $"Are you sure you want to delete '{file.FileName}'?\nThis will remove it from your history and online.",
+                    PrimaryButtonText = "Cancel",
+                    SecondaryButtonText = "Delete"
+                };
+
+                var result = await ShowQueuedDialogAsync(confirmationDialog);
+
+                if (result == ContentDialogResult.Secondary)
+                {
+                    bool deletedSuccessfully = false;
+
+                    if (file.IsExpired)
+                    {
+                        deletedSuccessfully = true;
+                    }
+                    else
+                    {
+                        deletedSuccessfully = await _uploadService.DeleteRemoteFileAsync(file);
+                    }
+
+                    if (deletedSuccessfully)
+                    {
+                        UploadRepository.Instance.DeleteUploadedFile(file);
+
+                        if (!UploadedFiles.Any())
+                        {
+                            this.noHistory.Visibility = Visibility.Visible;
+                            this.filesListView.Visibility = Visibility.Collapsed;
+                        }
+                    }
+                    else
+                    {
+                        var errorDialog = new ContentDialog
+                        {
+                            Title = "Deletion Failed",
+                            Content = "Could not delete the file from the server. Please check your internet connection and try again.",
+                            PrimaryButtonText = "OK"
+                        };
+                        await ShowQueuedDialogAsync(errorDialog);
+                    }
                 }
             }
         }
@@ -312,17 +381,89 @@ namespace _1809_UWP
             e.AcceptedOperation = DataPackageOperation.Copy;
         }
 
-        private void DeleteAllButton_Click(object sender, RoutedEventArgs e)
+        private async void DeleteAllButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!UploadedFiles.Any())
+            {
+                return;
+            }
+
+            var initialDialog = new ContentDialog
+            {
+                Title = "Delete All History?",
+                Content = "This will attempt to delete all non-expired files from the server and clear your entire local history.",
+                PrimaryButtonText = "Cancel",
+                SecondaryButtonText = "Proceed"
+            };
+
+            var initialResult = await ShowQueuedDialogAsync(initialDialog);
+
+            if (initialResult != ContentDialogResult.Secondary)
+            {
+                return;
+            }
+
             var filesToDelete = UploadedFiles.ToList();
+            var failedDeletions = new List<UploadedFile>();
+
             foreach (var file in filesToDelete)
+            {
+                if (!file.IsExpired)
+                {
+                    bool success = await _uploadService.DeleteRemoteFileAsync(file);
+                    if (!success)
+                    {
+                        failedDeletions.Add(file);
+                    }
+                }
+            }
+
+            if (failedDeletions.Count == 0)
+            {
+                ClearAllLocalHistory();
+            }
+            else
+            {
+                string errorMessage = "The following files could not be deleted from the server, possibly due to a network issue:\n\n";
+                errorMessage += string.Join("\n", failedDeletions.Select(f => f.FileName));
+
+                if (failedDeletions.Count > 5)
+                {
+                    errorMessage += $"\n... and {failedDeletions.Count - 5} more.";
+                }
+
+                errorMessage += "\n\nDo you want to clear your local history anyway?";
+
+                var forceClearDialog = new ContentDialog
+                {
+                    Title = "Deletion Failed for Some Files",
+                    Content = errorMessage,
+                    PrimaryButtonText = "Cancel",
+                    SecondaryButtonText = "Clear History Anyway"
+                };
+
+                var forceClearResult = await ShowQueuedDialogAsync(forceClearDialog);
+
+                if (forceClearResult == ContentDialogResult.Secondary)
+                {
+                    ClearAllLocalHistory();
+                }
+            }
+        }
+
+        private void ClearAllLocalHistory()
+        {
+            var filesToClear = UploadedFiles.ToList();
+            foreach (var file in filesToClear)
             {
                 UploadRepository.Instance.DeleteUploadedFile(file);
             }
-            LoadHistory();
-            this.noHistory.Visibility = Visibility.Visible;
-            this.filesListView.Visibility = Visibility.Collapsed;
-            UploadedFiles.Clear();
+
+            if (!UploadedFiles.Any())
+            {
+                this.noHistory.Visibility = Visibility.Visible;
+                this.filesListView.Visibility = Visibility.Collapsed;
+            }
         }
 
         private async void AboutButton_Click(object sender, RoutedEventArgs e)
