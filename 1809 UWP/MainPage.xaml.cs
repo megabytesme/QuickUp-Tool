@@ -257,7 +257,7 @@ namespace _1809_UWP
                             new Run() { Text = " and maybe my " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri("https://apps.microsoft.com/search?query=megabytesme"),
+                                NavigateUri = new Uri("https://apps.microsoft.com/search/publisher?name=MegaBytesMe"),
                                 Inlines = { new Run() { Text = "Other Apps" } }
                             },
                             new LineBreak(),
