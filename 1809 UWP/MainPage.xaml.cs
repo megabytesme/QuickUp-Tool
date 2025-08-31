@@ -156,6 +156,24 @@ namespace _1809_UWP
                     var dataPackage = new DataPackage();
                     dataPackage.SetText(url);
                     Clipboard.SetContent(dataPackage);
+
+                    var dialog = new ContentDialog
+                    {
+                        Title = "Upload Successful",
+                        Content = "The URL has been copied to your clipboard.",
+                        PrimaryButtonText = "Close",
+                        SecondaryButtonText = "Open in Browser",
+                    };
+
+                    ContentDialogResult result = await dialog.ShowAsync();
+
+                    if (result == ContentDialogResult.Secondary)
+                    {
+                        if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                        {
+                            await Windows.System.Launcher.LaunchUriAsync(uri);
+                        }
+                    }
                 }
                 else
                 {
