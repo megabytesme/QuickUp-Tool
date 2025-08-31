@@ -263,10 +263,7 @@ namespace _1809_UWP
             finally
             {
                 progressRingButton.IsEnabled = true;
-
-                this.buttonText.Text = "\uE898";
-                this.buttonText.FontFamily = new FontFamily("Segoe MDL2 Assets");
-
+                this.progressRingButton.Content = uploadIcon;                
                 this.progressBar.IsIndeterminate = false;
                 this.progressBar.Value = 0;
             }
