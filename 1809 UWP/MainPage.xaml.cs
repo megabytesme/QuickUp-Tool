@@ -263,7 +263,11 @@ namespace _1809_UWP
             finally
             {
                 progressRingButton.IsEnabled = true;
-                this.progressRingButton.Content = uploadIcon;
+
+                this.buttonText.Text = "\uE898";
+                this.buttonText.FontFamily = new FontFamily("Segoe MDL2 Assets");
+
+                this.progressBar.IsIndeterminate = false;
                 this.progressBar.Value = 0;
             }
         }
@@ -284,7 +288,14 @@ namespace _1809_UWP
         {
             progressBar.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
             {
-                progressBar.Value = (int)Math.Min(percentage, 100);
+                int value = (int)Math.Min(percentage, 100);
+                progressBar.Value = value;
+
+                if (value >= 100)
+                {
+                    progressBar.IsIndeterminate = true;
+                    buttonText.Text = "Processing...";
+                }
             });
         }
 

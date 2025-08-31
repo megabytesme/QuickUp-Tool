@@ -344,7 +344,10 @@ namespace _1507_UWP
             finally
             {
                 progressRingButton.IsEnabled = true;
+
                 this.progressRingButton.Content = uploadIcon;
+
+                this.progressBar.IsIndeterminate = false;
                 this.progressBar.Value = 0;
             }
         }
@@ -363,13 +366,17 @@ namespace _1507_UWP
 
         private void ReportProgress(double percentage)
         {
-            progressBar.Dispatcher.RunAsync(
-                Windows.UI.Core.CoreDispatcherPriority.Normal,
-                () =>
+            progressBar.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                int value = (int)Math.Min(percentage, 100);
+                progressBar.Value = value;
+
+                if (value >= 100)
                 {
-                    progressBar.Value = (int)Math.Min(percentage, 100);
+                    progressBar.IsIndeterminate = true;
+                    progressRingButton.Content = "Processing...";
                 }
-            );
+            });
         }
 
         private void ProgressRingButton_DragOver(object sender, DragEventArgs e)
