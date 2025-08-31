@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Store;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation.Metadata;
 using Windows.Services.Store;
@@ -580,15 +581,108 @@ namespace _1809_UWP
             {
                 Title = "About QuickUp Tool",
                 Content = dialogContent,
-                PrimaryButtonText = "OK"
+                PrimaryButtonText = "OK",
+                SecondaryButtonText = "Support Development"
             };
 
-            await ShowQueuedDialogAsync(dialog);
+            var result = await ShowQueuedDialogAsync(dialog);
+
+            if (result == ContentDialogResult.Secondary)
+            {
+                await ShowTipTierDialogAsync();
+            }
         }
 
         private async void ReviewButton_Click(object sender, RoutedEventArgs e)
         {
             StoreRateAndReviewResult result = await _storeContext.RequestRateAndReviewAppAsync();
+        }
+
+        private async Task ShowTipTierDialogAsync()
+        {
+            var tier1Button = new Button { Content = "Level 1 Tip (Small)", HorizontalAlignment = HorizontalAlignment.Stretch };
+            var tier2Button = new Button { Content = "Level 2 Tip (Medium)", HorizontalAlignment = HorizontalAlignment.Stretch };
+            var tier3Button = new Button { Content = "Level 3 Tip (Large)", HorizontalAlignment = HorizontalAlignment.Stretch };
+
+            var tierDialog = new ContentDialog
+            {
+                Title = "Select a Tip",
+                PrimaryButtonText = "Cancel"
+            };
+
+            tier1Button.Click += (s, e) => { tierDialog.Hide(); PurchaseTipAsync("tip_consumable_1", s as Button); };
+            tier2Button.Click += (s, e) => { tierDialog.Hide(); PurchaseTipAsync("tip_consumable_2", s as Button); };
+            tier3Button.Click += (s, e) => { tierDialog.Hide(); PurchaseTipAsync("tip_consumable_3", s as Button); };
+
+            var panel = new StackPanel { Spacing = 12 };
+            panel.Children.Add(tier1Button);
+            panel.Children.Add(tier2Button);
+            panel.Children.Add(tier3Button);
+
+            tierDialog.Content = panel;
+            await ShowQueuedDialogAsync(tierDialog);
+        }
+
+        private async Task PurchaseTipAsync(string productId, Button tipButton)
+        {
+            if (tipButton != null) tipButton.IsEnabled = false;
+
+            try
+            {
+                var unfulfilled = await CurrentApp.GetUnfulfilledConsumablesAsync();
+                var productToFulfill = unfulfilled.FirstOrDefault(p => p.ProductId == productId);
+
+                if (productToFulfill != null)
+                {
+                    await FulfillConsumableAsync(productId, productToFulfill.TransactionId);
+                }
+                else
+                {
+                    PurchaseResults results = await CurrentApp.RequestProductPurchaseAsync(productId);
+                    if (results.Status == ProductPurchaseStatus.Succeeded)
+                    {
+                        await FulfillConsumableAsync(productId, results.TransactionId);
+                    }
+                    else if (results.Status != ProductPurchaseStatus.NotPurchased)
+                    {
+                        await ShowQueuedDialogAsync(new ContentDialog { Title = "Error", Content = "The purchase could not be completed. Please try again later.", PrimaryButtonText = "OK" });
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                await ShowQueuedDialogAsync(new ContentDialog { Title = "Error", Content = "Could not connect to the Store. Please check your internet connection.", PrimaryButtonText = "OK" });
+            }
+            finally
+            {
+                if (tipButton != null) tipButton.IsEnabled = true;
+            }
+        }
+
+        private async Task FulfillConsumableAsync(string productId, Guid transactionId)
+        {
+            FulfillmentResult result = await CurrentApp.ReportConsumableFulfillmentAsync(productId, transactionId);
+
+            if (result == FulfillmentResult.Succeeded)
+            {
+                var thankYouDialog = new ContentDialog
+                {
+                    Title = "Thank You!",
+                    Content = "Your support means a lot and helps keep development going. Thank you for the tip!",
+                    PrimaryButtonText = "OK"
+                };
+                await ShowQueuedDialogAsync(thankYouDialog);
+            }
+            else
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Fulfillment Error",
+                    Content = "We could not register your purchase with the Store. Please try the purchase again to finalize it.",
+                    PrimaryButtonText = "OK"
+                };
+                await ShowQueuedDialogAsync(errorDialog);
+            }
         }
 
         private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
