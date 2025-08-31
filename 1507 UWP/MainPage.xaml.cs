@@ -464,34 +464,29 @@ namespace _1507_UWP
                             new LineBreak(),
                             new Run() { Text = "Copyright © 2025 MegaBytesMe" },
                             new LineBreak(),
-                            new Run() { Text = " " },
+                            new Run() { Text = " "},
                             new LineBreak(),
                             new Run() { Text = "Source code available on " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri(
-                                    "https://github.com/megabytesme/QuickUp-Tool"
-                                ),
-                                Inlines = { new Run() { Text = "GitHub" } },
+                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool"),
+                                Inlines = { new Run() { Text = "GitHub" } }
                             },
                             new LineBreak(),
                             new Run() { Text = "Anything wrong? Let us know: " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri(
-                                    "https://github.com/megabytesme/QuickUp-Tool/issues"
-                                ),
-                                Inlines = { new Run() { Text = "Support" } },
+                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool/issues"),
+                                Inlines = { new Run() { Text = "Support" } }
                             },
                             new LineBreak(),
                             new Run() { Text = "Privacy Policy: " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri(
-                                    "https://github.com/megabytesme/QuickUp-Tool/blob/master/PRIVACYPOLICY.md"
-                                ),
-                                Inlines = { new Run() { Text = "Privacy Policy" } },
+                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool/blob/master/PRIVACYPOLICY.md"),
+                                Inlines = { new Run() { Text = "Privacy Policy" } }
                             },
+                            new LineBreak(),
                             new LineBreak(),
                             new Run() { Text = "Like what you see? View my " },
                             new Hyperlink()
@@ -505,21 +500,25 @@ namespace _1507_UWP
                                 NavigateUri = new Uri(
                                     "https://apps.microsoft.com/search/publisher?name=MegaBytesMe"
                                 ),
-                                Inlines = { new Run() { Text = "Other Apps" } },
+                                Inlines = { new Run() { Text = "Other Apps," } },
                             },
-                            new LineBreak(),
-                            new Run() { Text = " " },
-                            new LineBreak(),
                             new Run()
                             {
-                                Text =
-                                    "QuickUp Tool is a Windows utility which allows you to quickly upload files without needing an account.",
+                                Text = " or consider buying me a coffee (supporting me) on ",
                             },
+                            new Hyperlink()
+                            {
+                                NavigateUri = new Uri("https://ko-fi.com/megabytesme"),
+                                Inlines = { new Run() { Text = "Ko-fi! :-)" } },
+                            },
+                            new LineBreak(),
+                            new LineBreak(),
+                            new Run() { Text = "QuickUp Tool is a Windows utility which allows you to quickly upload files without needing an account." }
                         },
-                        TextWrapping = TextWrapping.Wrap,
-                    },
+                        TextWrapping = TextWrapping.Wrap
+                    }
                 },
-                PrimaryButtonText = "OK",
+                PrimaryButtonText = "OK"
             };
 
             await dialog.ShowAsync();
