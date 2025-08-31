@@ -20,6 +20,7 @@ namespace _1507_UWP
     {
         private readonly Queue<ContentDialog> _dialogQueue = new Queue<ContentDialog>();
         private bool _isDialogShowing = false;
+        private UploadedFile _fileToShare;
 
         FontIcon uploadIcon = new FontIcon
         {
@@ -41,6 +42,7 @@ namespace _1507_UWP
             LoadHistory();
             var uploadManager = new UploadManager(UploadRepository.Instance);
             _uploadService = new UploadService(uploadManager, UploadRepository.Instance);
+            DataTransferManager.GetForCurrentView().DataRequested += OnDataRequested;
         }
 
         private async Task ShowQueuedDialogAsync(ContentDialog dialog)
@@ -87,54 +89,20 @@ namespace _1507_UWP
 
             noHistory.Visibility = Visibility.Collapsed;
 
-            manualFilesGrid.ColumnDefinitions.Add(
-                new ColumnDefinition
-                {
-                    Width = new GridLength(2, GridUnitType.Star),
-                    MinWidth = 150,
-                }
-            );
-            manualFilesGrid.ColumnDefinitions.Add(
-                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 }
-            );
-            manualFilesGrid.ColumnDefinitions.Add(
-                new ColumnDefinition
-                {
-                    Width = new GridLength(3, GridUnitType.Star),
-                    MinWidth = 200,
-                }
-            );
-            manualFilesGrid.ColumnDefinitions.Add(
-                new ColumnDefinition
-                {
-                    Width = new GridLength(1.5, GridUnitType.Star),
-                    MinWidth = 120,
-                }
-            );
-            manualFilesGrid.ColumnDefinitions.Add(
-                new ColumnDefinition
-                {
-                    Width = new GridLength(1.5, GridUnitType.Star),
-                    MinWidth = 100,
-                }
-            );
-            manualFilesGrid.ColumnDefinitions.Add(
-                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 }
-            );
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star), MinWidth = 150 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star), MinWidth = 200 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star), MinWidth = 120 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star), MinWidth = 100 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto), MinWidth = 50 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto), MinWidth = 50 });
 
             manualFilesGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
             var headers = new[] { "File Name", "Status", "URL", "Expiry Date", "File Size" };
             for (int i = 0; i < headers.Length; i++)
             {
-                var header = new TextBlock
-                {
-                    Text = headers[i],
-                    FontWeight = FontWeights.SemiBold,
-                    Padding = new Thickness(12),
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                };
+                var header = new TextBlock { Text = headers[i], FontWeight = FontWeights.SemiBold, Padding = new Thickness(12), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
                 Grid.SetRow(header, 0);
                 Grid.SetColumn(header, i);
                 manualFilesGrid.Children.Add(header);
@@ -163,71 +131,30 @@ namespace _1507_UWP
                     switch (i)
                     {
                         case 0:
-                            content = new TextBlock
-                            {
-                                Text = file.FileName ?? "N/A",
-                                TextWrapping = TextWrapping.Wrap,
-                                Padding = new Thickness(12),
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                VerticalAlignment = VerticalAlignment.Center,
-                                DataContext = file,
-                            };
+                            content = new TextBlock { Text = file.FileName ?? "N/A", TextWrapping = TextWrapping.Wrap, Padding = new Thickness(12), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, DataContext = file };
                             break;
                         case 1:
-                            content = new TextBlock
-                            {
-                                Text = file.Status ?? "N/A",
-                                Padding = new Thickness(12),
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                VerticalAlignment = VerticalAlignment.Center,
-                                DataContext = file,
-                            };
+                            content = new TextBlock { Text = file.Status ?? "N/A", Padding = new Thickness(12), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, DataContext = file };
                             break;
                         case 2:
-                            var urlButton = new HyperlinkButton
-                            {
-                                Content = new TextBlock
-                                {
-                                    Text = file.URL ?? "N/A",
-                                    TextWrapping = TextWrapping.Wrap,
-                                },
-                                DataContext = file,
-                                Padding = new Thickness(12),
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                VerticalAlignment = VerticalAlignment.Center,
-                            };
+                            var urlButton = new HyperlinkButton { Content = new TextBlock { Text = file.URL ?? "N/A", TextWrapping = TextWrapping.Wrap }, DataContext = file, Padding = new Thickness(12), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
                             urlButton.Click += UrlButton_Click;
                             content = urlButton;
                             break;
                         case 3:
-                            content = new TextBlock
-                            {
-                                Text = file.DaysUntilExpiry,
-                                Padding = new Thickness(12),
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                VerticalAlignment = VerticalAlignment.Center,
-                                DataContext = file,
-                            };
+                            content = new TextBlock { Text = file.DaysUntilExpiry, Padding = new Thickness(12), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, DataContext = file };
                             break;
                         case 4:
-                            content = new TextBlock
-                            {
-                                Text = file.FileSizeReadable ?? "N/A",
-                                Padding = new Thickness(12),
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                VerticalAlignment = VerticalAlignment.Center,
-                                DataContext = file,
-                            };
+                            content = new TextBlock { Text = file.FileSizeReadable ?? "N/A", Padding = new Thickness(12), HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, DataContext = file };
                             break;
                         case 5:
-                            var deleteButton = new Button
-                            {
-                                Width = 36,
-                                Height = 36,
-                                VerticalAlignment = VerticalAlignment.Center,
-                                HorizontalAlignment = HorizontalAlignment.Center,
-                                DataContext = file,
-                            };
+                            var shareButton = new Button { Width = 36, Height = 36, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, DataContext = file };
+                            shareButton.Click += ShareButton_Click;
+                            shareButton.Content = new FontIcon { FontSize = 12, Glyph = "\uE72D" };
+                            content = shareButton;
+                            break;
+                        case 6:
+                            var deleteButton = new Button { Width = 36, Height = 36, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, DataContext = file };
                             deleteButton.Click += DeleteButton_Click;
                             deleteButton.Content = new FontIcon { FontSize = 12, Glyph = "\uE74D" };
                             content = deleteButton;
@@ -245,16 +172,8 @@ namespace _1507_UWP
 
                 foreach (var element in rowElements.Concat(rowBackgrounds))
                 {
-                    element.PointerEntered += (s, e) =>
-                    {
-                        foreach (var bg in rowBackgrounds)
-                            bg.Background = hoverBrush;
-                    };
-                    element.PointerExited += (s, e) =>
-                    {
-                        foreach (var bg in rowBackgrounds)
-                            bg.Background = transparentBrush;
-                    };
+                    element.PointerEntered += (s, e) => { foreach (var bg in rowBackgrounds) bg.Background = hoverBrush; };
+                    element.PointerExited += (s, e) => { foreach (var bg in rowBackgrounds) bg.Background = transparentBrush; };
                 }
 
                 rowIndex++;
@@ -613,6 +532,26 @@ namespace _1507_UWP
                 this.noHistory.Visibility = Visibility.Collapsed;
             }
             LoadHistory();
+        }
+
+        private void ShareButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.DataContext is UploadedFile file)
+            {
+                _fileToShare = file;
+                DataTransferManager.ShowShareUI();
+            }
+        }
+
+        private void OnDataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            if (_fileToShare != null)
+            {
+                DataRequest request = args.Request;
+                request.Data.Properties.Title = $"Link for {_fileToShare.FileName}";
+                request.Data.SetWebLink(new Uri(_fileToShare.URL));
+                request.Data.SetText($"Here is the link to my uploaded file: {_fileToShare.URL}");
+            }
         }
     }
 }

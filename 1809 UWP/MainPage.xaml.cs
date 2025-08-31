@@ -24,6 +24,7 @@ namespace _1809_UWP
     {
         private readonly Queue<ContentDialog> _dialogQueue = new Queue<ContentDialog>();
         private bool _isDialogShowing = false;
+        private UploadedFile _fileToShare;
 
         FontIcon uploadIcon = new FontIcon
         {
@@ -47,6 +48,7 @@ namespace _1809_UWP
             LoadHistory();
             var uploadManager = new UploadManager(UploadRepository.Instance);
             _uploadService = new UploadService(uploadManager, UploadRepository.Instance);
+            DataTransferManager.GetForCurrentView().DataRequested += OnDataRequested;
         }
 
         private async Task ShowQueuedDialogAsync(ContentDialog dialog)
@@ -431,6 +433,26 @@ namespace _1809_UWP
             {
                 this.noHistory.Visibility = Visibility.Collapsed;
                 this.filesListView.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void ShareButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.DataContext is UploadedFile file)
+            {
+                _fileToShare = file;
+                DataTransferManager.ShowShareUI();
+            }
+        }
+
+        private void OnDataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            if (_fileToShare != null)
+            {
+                DataRequest request = args.Request;
+                request.Data.Properties.Title = $"Link for {_fileToShare.FileName}";
+                request.Data.SetWebLink(new Uri(_fileToShare.URL));
+                request.Data.SetText($"Here is the link to my uploaded file: {_fileToShare.URL}");
             }
         }
     }
