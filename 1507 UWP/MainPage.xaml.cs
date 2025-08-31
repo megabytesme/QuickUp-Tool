@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
 
-namespace _1703_UWP
+namespace _1507_UWP
 {
     public sealed partial class MainPage : Page
     {
