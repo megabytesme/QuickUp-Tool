@@ -229,6 +229,7 @@ namespace _1809_UWP
             {
                 uploadResult = await _uploadService.ProcessFileAsync(file, progressIndicator);
                 LoadHistory();
+                filesListView.ScrollIntoView(file);
                 if (uploadResult.IsSuccessful && !string.IsNullOrEmpty(uploadResult.Url))
                 {
                     ToastTemplateType toastTemplate = ToastTemplateType.ToastText02;
