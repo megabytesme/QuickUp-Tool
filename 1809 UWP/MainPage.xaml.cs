@@ -22,6 +22,9 @@ namespace _1809_UWP
 {
     public sealed partial class MainPage : Page
     {
+        private readonly Queue<ContentDialog> _dialogQueue = new Queue<ContentDialog>();
+        private bool _isDialogShowing = false;
+
         FontIcon uploadIcon = new FontIcon
         {
             Glyph = "\uE898",
@@ -46,6 +49,27 @@ namespace _1809_UWP
             _uploadService = new UploadService(uploadManager, UploadRepository.Instance);
         }
 
+        private async Task ShowQueuedDialogAsync(ContentDialog dialog)
+        {
+            _dialogQueue.Enqueue(dialog);
+            await ProcessDialogQueueAsync();
+        }
+
+        private async Task ProcessDialogQueueAsync()
+        {
+            if (_isDialogShowing || _dialogQueue.Count == 0)
+            {
+                return;
+            }
+
+            _isDialogShowing = true;
+            ContentDialog dialogToShow = _dialogQueue.Dequeue();
+            await dialogToShow.ShowAsync();
+            _isDialogShowing = false;
+
+            await ProcessDialogQueueAsync();
+        }
+
         private void ExtendViewIntoTitleBar()
         {
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
@@ -68,14 +92,14 @@ namespace _1809_UWP
             }
             else
             {
-            this.Background = new AcrylicBrush
-            {
-                BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
-                TintColor = Colors.Transparent,
-                TintOpacity = 0.6,
-                FallbackColor = Colors.Gray
-            };
-        }
+                this.Background = new AcrylicBrush
+                {
+                    BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
+                    TintColor = Colors.Transparent,
+                    TintOpacity = 0.6,
+                    FallbackColor = Colors.Gray
+                };
+            }
         }
 
         private void LoadHistory()
@@ -109,15 +133,15 @@ namespace _1809_UWP
                     SecondaryButtonText = "Open in Browser"
                 };
 
-                ContentDialogResult result = await dialog.ShowAsync();
-
-                if (result == ContentDialogResult.Secondary)
+                dialog.SecondaryButtonClick += async (s, args) =>
                 {
                     if (Uri.TryCreate(file.URL, UriKind.Absolute, out var uri))
                     {
                         await Windows.System.Launcher.LaunchUriAsync(uri);
                     }
-                }
+                };
+
+                await ShowQueuedDialogAsync(dialog);
             }
         }
 
@@ -139,7 +163,7 @@ namespace _1809_UWP
                     CloseButtonText = "Close"
                 };
 
-                await dialog.ShowAsync();
+                await ShowQueuedDialogAsync(dialog);
             }
         }
 
@@ -192,7 +216,6 @@ namespace _1809_UWP
             progressRingButton.IsEnabled = false;
             progressRingButton.FontFamily = new FontFamily("XamlAutoFontFamily");
             progressRingButton.Content = "Uploading" + Environment.NewLine + file.Name;
-            string url = null;
             UploadResult uploadResult = null;
 
             var progressIndicator = new Progress<double>(ReportProgress);
@@ -203,7 +226,7 @@ namespace _1809_UWP
                 LoadHistory();
                 if (uploadResult.IsSuccessful && !string.IsNullOrEmpty(uploadResult.Url))
                 {
-                    url = uploadResult.Url;
+                    string url = uploadResult.Url;
                     var dataPackage = new DataPackage();
                     dataPackage.SetText(url);
                     Clipboard.SetContent(dataPackage);
@@ -216,15 +239,15 @@ namespace _1809_UWP
                         SecondaryButtonText = "Open in Browser",
                     };
 
-                    ContentDialogResult result = await dialog.ShowAsync();
-
-                    if (result == ContentDialogResult.Secondary)
+                    dialog.SecondaryButtonClick += async (s, args) =>
                     {
                         if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
                         {
                             await Windows.System.Launcher.LaunchUriAsync(uri);
                         }
-                    }
+                    };
+
+                    await ShowQueuedDialogAsync(dialog);
                 }
                 else
                 {
@@ -248,7 +271,7 @@ namespace _1809_UWP
                 CloseButtonText = "OK"
             };
 
-            await errorDialog.ShowAsync();
+            await ShowQueuedDialogAsync(errorDialog);
         }
 
         private void ReportProgress(double percentage)
@@ -264,7 +287,7 @@ namespace _1809_UWP
             e.AcceptedOperation = DataPackageOperation.Copy;
         }
 
-        private async void DeleteAllButton_Click(object sender, RoutedEventArgs e)
+        private void DeleteAllButton_Click(object sender, RoutedEventArgs e)
         {
             var filesToDelete = UploadedFiles.ToList();
             foreach (var file in filesToDelete)
@@ -351,7 +374,7 @@ namespace _1809_UWP
                 CloseButtonText = "OK"
             };
 
-            await dialog.ShowAsync();
+            await ShowQueuedDialogAsync(dialog);
         }
 
         private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)

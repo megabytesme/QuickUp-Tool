@@ -18,6 +18,9 @@ namespace _1507_UWP
 {
     public sealed partial class MainPage : Page
     {
+        private readonly Queue<ContentDialog> _dialogQueue = new Queue<ContentDialog>();
+        private bool _isDialogShowing = false;
+
         FontIcon uploadIcon = new FontIcon
         {
             Glyph = "\uE898",
@@ -38,6 +41,27 @@ namespace _1507_UWP
             LoadHistory();
             var uploadManager = new UploadManager(UploadRepository.Instance);
             _uploadService = new UploadService(uploadManager, UploadRepository.Instance);
+        }
+
+        private async Task ShowQueuedDialogAsync(ContentDialog dialog)
+        {
+            _dialogQueue.Enqueue(dialog);
+            await ProcessDialogQueueAsync();
+        }
+
+        private async Task ProcessDialogQueueAsync()
+        {
+            if (_isDialogShowing || _dialogQueue.Count == 0)
+            {
+                return;
+            }
+
+            _isDialogShowing = true;
+            ContentDialog dialogToShow = _dialogQueue.Dequeue();
+            await dialogToShow.ShowAsync();
+            _isDialogShowing = false;
+
+            await ProcessDialogQueueAsync();
         }
 
         private void LoadHistory()
@@ -257,15 +281,15 @@ namespace _1507_UWP
                     SecondaryButtonText = "Open in Browser",
                 };
 
-                ContentDialogResult result = await dialog.ShowAsync();
-
-                if (result == ContentDialogResult.Secondary)
+                dialog.SecondaryButtonClick += async (s, args) =>
                 {
                     if (Uri.TryCreate(file.URL, UriKind.Absolute, out var uri))
                     {
                         await Windows.System.Launcher.LaunchUriAsync(uri);
                     }
-                }
+                };
+
+                await ShowQueuedDialogAsync(dialog);
             }
         }
 
@@ -305,7 +329,7 @@ namespace _1507_UWP
                     PrimaryButtonText = "Close",
                 };
 
-                await dialog.ShowAsync();
+                await ShowQueuedDialogAsync(dialog);
             }
         }
 
@@ -358,7 +382,6 @@ namespace _1507_UWP
             progressRingButton.IsEnabled = false;
             progressRingButton.FontFamily = new FontFamily("XamlAutoFontFamily");
             progressRingButton.Content = "Uploading" + Environment.NewLine + file.Name;
-            string url = null;
             UploadResult uploadResult = null;
 
             var progressIndicator = new Progress<double>(ReportProgress);
@@ -369,7 +392,7 @@ namespace _1507_UWP
                 LoadHistory();
                 if (uploadResult.IsSuccessful && !string.IsNullOrEmpty(uploadResult.Url))
                 {
-                    url = uploadResult.Url;
+                    string url = uploadResult.Url;
                     var dataPackage = new DataPackage();
                     dataPackage.SetText(url);
                     Clipboard.SetContent(dataPackage);
@@ -382,15 +405,15 @@ namespace _1507_UWP
                         SecondaryButtonText = "Open in Browser",
                     };
 
-                    ContentDialogResult result = await dialog.ShowAsync();
-
-                    if (result == ContentDialogResult.Secondary)
+                    dialog.SecondaryButtonClick += async (s, args) =>
                     {
                         if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
                         {
                             await Windows.System.Launcher.LaunchUriAsync(uri);
                         }
-                    }
+                    };
+
+                    await ShowQueuedDialogAsync(dialog);
                 }
                 else
                 {
@@ -416,7 +439,7 @@ namespace _1507_UWP
                 PrimaryButtonText = "OK",
             };
 
-            await errorDialog.ShowAsync();
+            await ShowQueuedDialogAsync(errorDialog);
         }
 
         private void ReportProgress(double percentage)
@@ -464,27 +487,33 @@ namespace _1507_UWP
                             new LineBreak(),
                             new Run() { Text = "Copyright © 2025 MegaBytesMe" },
                             new LineBreak(),
-                            new Run() { Text = " "},
+                            new Run() { Text = " " },
                             new LineBreak(),
                             new Run() { Text = "Source code available on " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool"),
-                                Inlines = { new Run() { Text = "GitHub" } }
+                                NavigateUri = new Uri(
+                                    "https://github.com/megabytesme/QuickUp-Tool"
+                                ),
+                                Inlines = { new Run() { Text = "GitHub" } },
                             },
                             new LineBreak(),
                             new Run() { Text = "Anything wrong? Let us know: " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool/issues"),
-                                Inlines = { new Run() { Text = "Support" } }
+                                NavigateUri = new Uri(
+                                    "https://github.com/megabytesme/QuickUp-Tool/issues"
+                                ),
+                                Inlines = { new Run() { Text = "Support" } },
                             },
                             new LineBreak(),
                             new Run() { Text = "Privacy Policy: " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool/blob/master/PRIVACYPOLICY.md"),
-                                Inlines = { new Run() { Text = "Privacy Policy" } }
+                                NavigateUri = new Uri(
+                                    "https://github.com/megabytesme/QuickUp-Tool/blob/master/PRIVACYPOLICY.md"
+                                ),
+                                Inlines = { new Run() { Text = "Privacy Policy" } },
                             },
                             new LineBreak(),
                             new LineBreak(),
@@ -513,15 +542,19 @@ namespace _1507_UWP
                             },
                             new LineBreak(),
                             new LineBreak(),
-                            new Run() { Text = "QuickUp Tool is a Windows utility which allows you to quickly upload files without needing an account." }
+                            new Run()
+                            {
+                                Text =
+                                    "QuickUp Tool is a Windows utility which allows you to quickly upload files without needing an account.",
+                            },
                         },
-                        TextWrapping = TextWrapping.Wrap
-                    }
+                        TextWrapping = TextWrapping.Wrap,
+                    },
                 },
-                PrimaryButtonText = "OK"
+                PrimaryButtonText = "OK",
             };
 
-            await dialog.ShowAsync();
+            await ShowQueuedDialogAsync(dialog);
         }
 
         private void SearchBox_TextChanged(
