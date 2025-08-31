@@ -547,11 +547,16 @@ namespace _1507_UWP
 
         private async void AboutButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new ContentDialog
+            var reviewButton = new Button
             {
-                Title = "About QuickUp Tool",
-                Content = new ScrollViewer()
-                {
+                Content = "Rate and Review This App",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Margin = new Thickness(0, 8, 0, 0)
+            };
+            reviewButton.Click += ReviewButton_Click;
+
+            var scrollContent = new ScrollViewer()
+            {
                     Content = new TextBlock()
                     {
                         Inlines =
@@ -625,11 +630,42 @@ namespace _1507_UWP
                         },
                         TextWrapping = TextWrapping.Wrap,
                     },
-                },
-                PrimaryButtonText = "OK",
+            };
+
+            var dialogContent = new StackPanel();
+            dialogContent.Children.Add(scrollContent);
+            dialogContent.Children.Add(reviewButton);
+
+            var dialog = new ContentDialog
+            {
+                Title = "About QuickUp Tool",
+                Content = dialogContent,
+                PrimaryButtonText = "OK"
             };
 
             await ShowQueuedDialogAsync(dialog);
+        }
+
+        private async void ReviewButton_Click(object sender, RoutedEventArgs e)
+        {
+            string storeId = "9npfvnqdx777";
+
+            var reviewUri = new Uri($"ms-windows-store://review/?ProductId={storeId}");
+
+            try
+            {
+                await Windows.System.Launcher.LaunchUriAsync(reviewUri);
+            }
+            catch (Exception)
+            {
+                var errorDialog = new ContentDialog
+                {
+                    Title = "Error",
+                    Content = "Could not open the Microsoft Store to leave a review.",
+                    PrimaryButtonText = "OK"
+                };
+                await ShowQueuedDialogAsync(errorDialog);
+            }
         }
 
         private void SearchBox_TextChanged(

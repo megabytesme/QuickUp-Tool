@@ -10,6 +10,7 @@ using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation.Metadata;
+using Windows.Services.Store;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI;
@@ -28,6 +29,7 @@ namespace _1809_UWP
         private readonly Queue<DialogQueueItem> _dialogQueue = new Queue<DialogQueueItem>();
         private bool _isDialogShowing = false;
         private UploadedFile _fileToShare;
+        private static StoreContext _storeContext;
 
         FontIcon uploadIcon = new FontIcon
         {
@@ -52,6 +54,7 @@ namespace _1809_UWP
             var uploadManager = new UploadManager(UploadRepository.Instance);
             _uploadService = new UploadService(uploadManager, UploadRepository.Instance);
             DataTransferManager.GetForCurrentView().DataRequested += OnDataRequested;
+            _storeContext = StoreContext.GetDefault();
         }
 
         private class DialogQueueItem
@@ -468,14 +471,19 @@ namespace _1809_UWP
 
         private async void AboutButton_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new ContentDialog
+            var reviewButton = new Button
             {
-                Title = "About QuickUp Tool",
-                Content = new ScrollViewer()
+                Content = "Rate and Review This App",
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Margin = new Thickness(0, 8, 0, 0)
+            };
+            reviewButton.Click += ReviewButton_Click;
+
+            var scrollContent = new ScrollViewer()
+            {
+                Content = new TextBlock()
                 {
-                    Content = new TextBlock()
-                    {
-                        Inlines =
+                    Inlines =
                         {
                             new Run() { Text = "QuickUp Tool" },
                             new LineBreak(),
@@ -483,27 +491,33 @@ namespace _1809_UWP
                             new LineBreak(),
                             new Run() { Text = "Copyright © 2025 MegaBytesMe" },
                             new LineBreak(),
-                            new Run() { Text = " "},
+                            new Run() { Text = " " },
                             new LineBreak(),
                             new Run() { Text = "Source code available on " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool"),
-                                Inlines = { new Run() { Text = "GitHub" } }
+                                NavigateUri = new Uri(
+                                    "https://github.com/megabytesme/QuickUp-Tool"
+                                ),
+                                Inlines = { new Run() { Text = "GitHub" } },
                             },
                             new LineBreak(),
                             new Run() { Text = "Anything wrong? Let us know: " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool/issues"),
-                                Inlines = { new Run() { Text = "Support" } }
+                                NavigateUri = new Uri(
+                                    "https://github.com/megabytesme/QuickUp-Tool/issues"
+                                ),
+                                Inlines = { new Run() { Text = "Support" } },
                             },
                             new LineBreak(),
                             new Run() { Text = "Privacy Policy: " },
                             new Hyperlink()
                             {
-                                NavigateUri = new Uri("https://github.com/megabytesme/QuickUp-Tool/blob/master/PRIVACYPOLICY.md"),
-                                Inlines = { new Run() { Text = "Privacy Policy" } }
+                                NavigateUri = new Uri(
+                                    "https://github.com/megabytesme/QuickUp-Tool/blob/master/PRIVACYPOLICY.md"
+                                ),
+                                Inlines = { new Run() { Text = "Privacy Policy" } },
                             },
                             new LineBreak(),
                             new LineBreak(),
@@ -532,15 +546,33 @@ namespace _1809_UWP
                             },
                             new LineBreak(),
                             new LineBreak(),
-                            new Run() { Text = "QuickUp Tool is a Windows utility which allows you to quickly upload files without needing an account." }
+                            new Run()
+                            {
+                                Text =
+                                    "QuickUp Tool is a Windows utility which allows you to quickly upload files without needing an account.",
+                            },
                         },
-                        TextWrapping = TextWrapping.Wrap
-                    }
+                    TextWrapping = TextWrapping.Wrap,
                 },
-                CloseButtonText = "OK"
+            };
+
+            var dialogContent = new StackPanel();
+            dialogContent.Children.Add(scrollContent);
+            dialogContent.Children.Add(reviewButton);
+
+            var dialog = new ContentDialog
+            {
+                Title = "About QuickUp Tool",
+                Content = dialogContent,
+                PrimaryButtonText = "OK"
             };
 
             await ShowQueuedDialogAsync(dialog);
+        }
+
+        private async void ReviewButton_Click(object sender, RoutedEventArgs e)
+        {
+            StoreRateAndReviewResult result = await _storeContext.RequestRateAndReviewAppAsync();
         }
 
         private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
