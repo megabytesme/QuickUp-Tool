@@ -1,4 +1,5 @@
-﻿using System;
+﻿using _1809_UWP.Services;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +31,9 @@ namespace _1809_UWP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            ReviewRequestService.Initialize();
+            ReviewRequestService.IncrementLaunchCount();
         }
 
         /// <summary>

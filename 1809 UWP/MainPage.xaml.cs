@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using _1809_UWP.Services;
+using Microsoft.UI.Xaml.Controls;
 using QuickUp.Shared;
 using System;
 using System.Collections.Generic;
@@ -228,6 +229,9 @@ namespace _1809_UWP
                 LoadHistory();
                 if (uploadResult.IsSuccessful && !string.IsNullOrEmpty(uploadResult.Url))
                 {
+                    ReviewRequestService.IncrementSuccessfulUploadCount();
+                    ReviewRequestService.TryRequestReview();
+
                     string url = uploadResult.Url;
                     var dataPackage = new DataPackage();
                     dataPackage.SetText(url);
