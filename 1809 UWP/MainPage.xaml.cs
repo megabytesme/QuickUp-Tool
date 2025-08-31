@@ -311,9 +311,7 @@ namespace _1809_UWP
                     toastTextElements[1].AppendChild(toastXml.CreateTextNode($"{file.Name} has been uploaded."));
                     ToastNotification toast = new ToastNotification(toastXml);
                     ToastNotificationManager.CreateToastNotifier().Show(toast);
-
                     ReviewRequestService.IncrementSuccessfulUploadCount();
-                    ReviewRequestService.TryRequestReview();
 
                     string url = uploadResult.Url;
                     var dataPackage = new DataPackage();
@@ -337,6 +335,24 @@ namespace _1809_UWP
                     };
 
                     await ShowQueuedDialogAsync(dialog);
+
+                    if (ReviewRequestService.AlreadyShown)
+                    {
+                        return;
+                    }
+
+                    var reviewDialog = new ContentDialog
+                    {
+                        Title = "Enjoying QuickUp Tool?",
+                        Content = "If you like using QuickUp Tool, please consider rating and reviewing it in the Microsoft Store. Your support helps us improve the app!",
+                        PrimaryButtonText = "No, Thanks",
+                        SecondaryButtonText = "Rate and Review"
+                    };
+                    var reviewResult = await ShowQueuedDialogAsync(reviewDialog);
+                    if (reviewResult == ContentDialogResult.Secondary)
+                    {
+                        ReviewRequestService.TryRequestReview();
+                    }
                 }
                 else
                 {

@@ -131,6 +131,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ReviewRequestService.cs" />
     <Compile Include="SharePage.xaml.cs">
       <DependentUpon>SharePage.xaml</DependentUpon>
     </Compile>

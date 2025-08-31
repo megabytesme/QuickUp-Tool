@@ -1,4 +1,5 @@
-﻿using QuickUp.Shared;
+﻿using _1507_UWP.Services;
+using QuickUp.Shared;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -390,6 +391,7 @@ namespace _1507_UWP
                     toastTextElements[1].AppendChild(toastXml.CreateTextNode($"{file.Name} has been uploaded."));
                     ToastNotification toast = new ToastNotification(toastXml);
                     ToastNotificationManager.CreateToastNotifier().Show(toast);
+                    ReviewRequestService.IncrementSuccessfulUploadCount();
 
                     string url = uploadResult.Url;
                     var dataPackage = new DataPackage();
@@ -413,6 +415,24 @@ namespace _1507_UWP
                     };
 
                     await ShowQueuedDialogAsync(dialog);
+
+                    if (ReviewRequestService.AlreadyShown)
+                    {
+                        return;
+                    }
+
+                    var reviewDialog = new ContentDialog
+                    {
+                        Title = "Enjoying QuickUp Tool?",
+                        Content = "If you like using QuickUp Tool, please consider rating and reviewing it in the Microsoft Store. Your support helps us improve the app!",
+                        PrimaryButtonText = "No, Thanks",
+                        SecondaryButtonText = "Rate and Review"
+                    };
+                    var reviewResult = await ShowQueuedDialogAsync(reviewDialog);
+                    if (reviewResult == ContentDialogResult.Secondary)
+                    {
+                        ReviewRequestService.TryRequestReview();
+                    }
                 }
                 else
                 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using _1507_UWP.Services;
+using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
@@ -20,6 +21,9 @@ namespace _1507_UWP
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            ReviewRequestService.Initialize();
+            ReviewRequestService.IncrementLaunchCount();
         }
 
         /// <summary>

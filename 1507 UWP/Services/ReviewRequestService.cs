@@ -1,22 +1,19 @@
 using System;
 using Windows.Storage;
-using Windows.Services.Store;
+using Windows.UI.Xaml.Controls;
 
-namespace _1809_UWP.Services
+namespace _1507_UWP.Services
 {
     public static class ReviewRequestService
     {
-        private static StoreContext _storeContext;
-
-        private static readonly ApplicationDataContainer _localSettings = ApplicationData.Current.LocalSettings;
+        private static readonly ApplicationDataContainer _localSettings = ApplicationData
+            .Current
+            .LocalSettings;
         private const string LaunchCountKey = "AppLaunchCount";
         private const string UploadCountKey = "SuccessfulUploadCount";
         private const string ReviewRequestShownKey = "ReviewRequestShown";
 
-        public static void Initialize()
-        {
-            _storeContext = StoreContext.GetDefault();
-        }
+        public static void Initialize() { }
 
         public static void IncrementLaunchCount()
         {
@@ -34,9 +31,6 @@ namespace _1809_UWP.Services
 
         public static async void TryRequestReview()
         {
-            if (_storeContext == null)
-                return;
-
             bool alreadyShown = _localSettings.Values[ReviewRequestShownKey] as bool? ?? false;
             int launchCount = _localSettings.Values[LaunchCountKey] as int? ?? 0;
             int uploadCount = _localSettings.Values[UploadCountKey] as int? ?? 0;
@@ -45,7 +39,11 @@ namespace _1809_UWP.Services
             {
                 _localSettings.Values[ReviewRequestShownKey] = true;
 
-                StoreRateAndReviewResult result = await _storeContext.RequestRateAndReviewAppAsync();
+                string storeId = "9npfvnqdx777";
+
+                var reviewUri = new Uri($"ms-windows-store://review/?ProductId={storeId}");
+
+                await Windows.System.Launcher.LaunchUriAsync(reviewUri);
             }
         }
     }
