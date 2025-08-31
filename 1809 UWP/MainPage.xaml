@@ -120,10 +120,12 @@
                        Margin="24"
                        Opacity="0.5"/>
                         <ListView x:Name="filesListView"
-                      ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}"
-                      Visibility="Visible"
-                      MinHeight="200"
-                      Margin="8">
+                                  ItemsSource="{x:Bind UploadedFiles, Mode=OneWay}"
+                                  Visibility="Visible"
+                                  MinHeight="200"
+                                  Margin="8"
+                                  IsItemClickEnabled="True"
+                                  DoubleTapped="FilesListView_DoubleTapped">
                             <ListView.Header>
                                 <Grid ColumnSpacing="8" Padding="12">
                                     <Grid.ColumnDefinitions>
@@ -171,7 +173,10 @@
                                             VerticalAlignment="Center"
                                             MaxWidth="120"/>
 
-                                        <HyperlinkButton Grid.Column="2" MaxWidth="300" HorizontalAlignment="Center">
+                                        <HyperlinkButton Grid.Column="2" 
+                                                         MaxWidth="300" 
+                                                         HorizontalAlignment="Center"
+                                                         Click="UrlButton_Click">
                                             <HyperlinkButton.Content>
                                                 <TextBlock Text="{x:Bind URL}" 
                                                     TextWrapping="Wrap"

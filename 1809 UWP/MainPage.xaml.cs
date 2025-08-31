@@ -15,6 +15,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace _1809_UWP
@@ -67,14 +68,14 @@ namespace _1809_UWP
             }
             else
             {
-                this.Background = new AcrylicBrush
-                {
-                    BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
-                    TintColor = Colors.Transparent,
-                    TintOpacity = 0.6,
-                    FallbackColor = Colors.Gray
-                };
-            }
+            this.Background = new AcrylicBrush
+            {
+                BackgroundSource = AcrylicBackgroundSource.HostBackdrop,
+                TintColor = Colors.Transparent,
+                TintOpacity = 0.6,
+                FallbackColor = Colors.Gray
+            };
+        }
         }
 
         private void LoadHistory()
@@ -89,6 +90,56 @@ namespace _1809_UWP
             else
             {
                 this.noHistory.Visibility = Visibility.Visible;
+            }
+        }
+
+        private async void UrlButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element && element.DataContext is UploadedFile file && !string.IsNullOrEmpty(file.URL))
+            {
+                var dataPackage = new DataPackage();
+                dataPackage.SetText(file.URL);
+                Clipboard.SetContent(dataPackage);
+
+                var dialog = new ContentDialog
+                {
+                    Title = "URL Copied",
+                    Content = "The URL has been copied to your clipboard.",
+                    PrimaryButtonText = "Close",
+                    SecondaryButtonText = "Open in Browser"
+                };
+
+                ContentDialogResult result = await dialog.ShowAsync();
+
+                if (result == ContentDialogResult.Secondary)
+                {
+                    if (Uri.TryCreate(file.URL, UriKind.Absolute, out var uri))
+                    {
+                        await Windows.System.Launcher.LaunchUriAsync(uri);
+                    }
+                }
+            }
+        }
+
+        private async void FilesListView_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (filesListView.SelectedItem is UploadedFile file)
+            {
+                var detailsPanel = new StackPanel { Spacing = 8 };
+                detailsPanel.Children.Add(new TextBlock { Text = $"File Name: {file.FileName ?? "N/A"}", TextWrapping = TextWrapping.Wrap });
+                detailsPanel.Children.Add(new TextBlock { Text = $"Status: {file.Status ?? "N/A"}" });
+                detailsPanel.Children.Add(new TextBlock { Text = $"URL: {file.URL ?? "N/A"}", TextWrapping = TextWrapping.Wrap });
+                detailsPanel.Children.Add(new TextBlock { Text = $"Expires: {file.DaysUntilExpiry ?? "N/A"}" });
+                detailsPanel.Children.Add(new TextBlock { Text = $"File Size: {file.FileSizeReadable ?? "N/A"}" });
+
+                var dialog = new ContentDialog
+                {
+                    Title = "File Details",
+                    Content = detailsPanel,
+                    CloseButtonText = "Close"
+                };
+
+                await dialog.ShowAsync();
             }
         }
 
