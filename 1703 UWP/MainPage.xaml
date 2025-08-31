@@ -55,6 +55,7 @@
                 FontFamily="Segoe MDL2 Assets"
                 FontSize="20"
                 Content="&#xE898;"
+                Background="{ThemeResource SystemControlHighlightAccentBrush}"
                 Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}"
                 VerticalAlignment="Top"
                 HorizontalAlignment="Center"
