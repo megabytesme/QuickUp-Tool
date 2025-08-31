@@ -236,7 +236,7 @@ namespace _1703_UWP
             {
                 Title = "Upload Error",
                 Content = $"File upload failed. Error: {errorMessage}",
-                CloseButtonText = "OK"
+                PrimaryButtonText = "OK"
             };
 
             await errorDialog.ShowAsync();
@@ -280,7 +280,7 @@ namespace _1703_UWP
                         {
                             new Run() { Text = "QuickUp Tool" },
                             new LineBreak(),
-                            new Run() { Text = "Version 1.0.2.0 (1703_UWP)" },
+                            new Run() { Text = "Version 1.0.3.0 (1507_UWP)" },
                             new LineBreak(),
                             new Run() { Text = "Copyright © 2025 MegaBytesMe" },
                             new LineBreak(),
@@ -327,7 +327,7 @@ namespace _1703_UWP
                         TextWrapping = TextWrapping.Wrap
                     }
                 },
-                CloseButtonText = "OK"
+                PrimaryButtonText = "OK"
             };
 
             await dialog.ShowAsync();
