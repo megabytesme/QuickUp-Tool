@@ -42,6 +42,11 @@ namespace QuickUp.Shared
             UploadedFiles.Add(uploadedFile);
         }
 
+        public void AddUploadedFileToDatabaseOnly(UploadedFile uploadedFile)
+        {
+            _database.Insert(uploadedFile);
+        }
+
         public void DeleteUploadedFile(UploadedFile uploadedFile)
         {
             _database.Delete(uploadedFile);

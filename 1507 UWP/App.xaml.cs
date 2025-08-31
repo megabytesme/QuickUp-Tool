@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace _1507_UWP
@@ -95,6 +85,14 @@ namespace _1507_UWP
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        protected override void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
+        {
+            var frame = new Frame();
+            frame.Navigate(typeof(SharePage), args);
+            Window.Current.Content = frame;
+            Window.Current.Activate();
         }
     }
 }
