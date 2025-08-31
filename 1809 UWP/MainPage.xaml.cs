@@ -290,7 +290,7 @@ namespace _1809_UWP
                         {
                             new Run() { Text = "QuickUp Tool" },
                             new LineBreak(),
-                            new Run() { Text = "Version 2.0.2.0 (1809_UWP)" },
+                            new Run() { Text = "Version 2.0.3.0 (1809_UWP)" },
                             new LineBreak(),
                             new Run() { Text = "Copyright © 2025 MegaBytesMe" },
                             new LineBreak(),
