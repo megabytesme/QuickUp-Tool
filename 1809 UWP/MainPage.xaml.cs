@@ -8,10 +8,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Data.Xml.Dom;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI;
+using Windows.UI.Notifications;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -229,6 +231,14 @@ namespace _1809_UWP
                 LoadHistory();
                 if (uploadResult.IsSuccessful && !string.IsNullOrEmpty(uploadResult.Url))
                 {
+                    ToastTemplateType toastTemplate = ToastTemplateType.ToastText02;
+                    XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
+                    XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
+                    toastTextElements[0].AppendChild(toastXml.CreateTextNode("Upload Successful!"));
+                    toastTextElements[1].AppendChild(toastXml.CreateTextNode($"{file.Name} has been uploaded."));
+                    ToastNotification toast = new ToastNotification(toastXml);
+                    ToastNotificationManager.CreateToastNotifier().Show(toast);
+
                     ReviewRequestService.IncrementSuccessfulUploadCount();
                     ReviewRequestService.TryRequestReview();
 
