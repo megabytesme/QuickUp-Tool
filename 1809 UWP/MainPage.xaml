@@ -167,7 +167,7 @@
                                         <TextBlock Text="{x:Bind DaysUntilExpiry}" Grid.Column="3" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="150"/>
                                         <TextBlock Text="{x:Bind FileSizeReadable}" Grid.Column="4" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="120"/>
 
-                                        <Button Click="ShareButton_Click" Grid.Column="5" Width="36" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Button Click="ShareButton_Click" Grid.Column="5" Width="36" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center" IsEnabled="{Binding IsSharable}">
                                             <FontIcon FontSize="12" Glyph="&#xE72D;"/>
                                         </Button>
 

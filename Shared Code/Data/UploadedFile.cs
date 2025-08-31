@@ -57,5 +57,23 @@ namespace QuickUp.Shared
                 }
             }
         }
+
+        public bool IsExpired
+        {
+            get
+            {
+                return DateTime.TryParse(ExpiryDate, out var expiry) && expiry < DateTime.UtcNow;
+            }
+        }
+
+        public bool IsSharable
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(URL)
+                    && !string.IsNullOrEmpty(FileName)
+                    && !IsExpired;
+            }
+        }
     }
 }

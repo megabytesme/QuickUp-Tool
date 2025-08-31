@@ -149,6 +149,7 @@ namespace _1507_UWP
                             break;
                         case 5:
                             var shareButton = new Button { Width = 36, Height = 36, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, DataContext = file };
+                            shareButton.IsEnabled = file.IsSharable;
                             shareButton.Click += ShareButton_Click;
                             shareButton.Content = new FontIcon { FontSize = 12, Glyph = "\uE72D" };
                             content = shareButton;
