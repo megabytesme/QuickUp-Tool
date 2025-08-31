@@ -43,80 +43,77 @@ namespace _1703_UWP
 
         private void LoadHistory()
         {
-            this.noHistory.Visibility = Visibility.Collapsed;
             manualFilesGrid.Children.Clear();
             manualFilesGrid.RowDefinitions.Clear();
+            manualFilesGrid.ColumnDefinitions.Clear();
 
             if (!UploadedFiles.Any())
             {
+                manualFilesGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+                Grid.SetRow(noHistory, 0);
+                Grid.SetColumn(noHistory, 0);
+                manualFilesGrid.Children.Add(noHistory);
                 this.noHistory.Visibility = Visibility.Visible;
                 return;
             }
 
             this.noHistory.Visibility = Visibility.Collapsed;
 
-            Grid headerRow = new Grid();
-            headerRow.Padding = new Thickness(12);
-            headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star), MinWidth = 150 });
-            headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 });
-            headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star), MinWidth = 200 });
-            headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star), MinWidth = 120 });
-            headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star), MinWidth = 100 });
-            headerRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 });
-
-            TextBlock fileNameHeader = new TextBlock { Text = "File Name", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(fileNameHeader, 0);
-            headerRow.Children.Add(fileNameHeader);
-
-            TextBlock statusHeader = new TextBlock { Text = "Status", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(statusHeader, 1);
-            headerRow.Children.Add(statusHeader);
-
-            TextBlock urlHeader = new TextBlock { Text = "URL", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(urlHeader, 2);
-            headerRow.Children.Add(urlHeader);
-
-            TextBlock expiryDateHeader = new TextBlock { Text = "Expiry Date", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(expiryDateHeader, 3);
-            headerRow.Children.Add(expiryDateHeader);
-
-            TextBlock fileSizeHeader = new TextBlock { Text = "File Size", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(fileSizeHeader, 4);
-            headerRow.Children.Add(fileSizeHeader);
-
-            TextBlock deleteButtonHeader = new TextBlock { Text = "", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }; // **Empty header for Delete Button**
-            Grid.SetColumn(deleteButtonHeader, 5);
-            headerRow.Children.Add(deleteButtonHeader);
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star), MinWidth = 150 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star), MinWidth = 200 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star), MinWidth = 120 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star), MinWidth = 100 });
+            manualFilesGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 });
 
             manualFilesGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            manualFilesGrid.Children.Add(headerRow);
-            Grid.SetRow(headerRow, 0);
+
+            TextBlock fileNameHeader = new TextBlock { Text = "File Name", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+            Grid.SetRow(fileNameHeader, 0);
+            Grid.SetColumn(fileNameHeader, 0);
+            manualFilesGrid.Children.Add(fileNameHeader);
+
+            TextBlock statusHeader = new TextBlock { Text = "Status", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+            Grid.SetRow(statusHeader, 0);
+            Grid.SetColumn(statusHeader, 1);
+            manualFilesGrid.Children.Add(statusHeader);
+
+            TextBlock urlHeader = new TextBlock { Text = "URL", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+            Grid.SetRow(urlHeader, 0);
+            Grid.SetColumn(urlHeader, 2);
+            manualFilesGrid.Children.Add(urlHeader);
+
+            TextBlock expiryDateHeader = new TextBlock { Text = "Expiry Date", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+            Grid.SetRow(expiryDateHeader, 0);
+            Grid.SetColumn(expiryDateHeader, 3);
+            manualFilesGrid.Children.Add(expiryDateHeader);
+
+            TextBlock fileSizeHeader = new TextBlock { Text = "File Size", FontWeight = FontWeights.SemiBold, TextAlignment = TextAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+            Grid.SetRow(fileSizeHeader, 0);
+            Grid.SetColumn(fileSizeHeader, 4);
+            manualFilesGrid.Children.Add(fileSizeHeader);
 
             int rowIndex = 1;
 
             foreach (var file in UploadedFiles)
             {
-                Grid dataRow = new Grid();
-                dataRow.Padding = new Thickness(12);
-                dataRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(2, GridUnitType.Star), MinWidth = 150 });
-                dataRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 });
-                dataRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star), MinWidth = 200 });
-                dataRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star), MinWidth = 120 });
-                dataRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1.5, GridUnitType.Star), MinWidth = 100 });
-                dataRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star), MinWidth = 80 });
+                manualFilesGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-                string fileNameToDisplay = file.FileName ?? "File name not available";
-                TextBlock fileNameText = new TextBlock { Text = fileNameToDisplay, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                string fileNameToDisplay = file.FileName ?? "File name not available";
+                TextBlock fileNameText = new TextBlock { Text = fileNameToDisplay, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+                Grid.SetRow(fileNameText, rowIndex);
                 Grid.SetColumn(fileNameText, 0);
-                dataRow.Children.Add(fileNameText);
+                manualFilesGrid.Children.Add(fileNameText);
 
-                string statusToDisplay = file.Status ?? "Status not available";
-                TextBlock statusText = new TextBlock { Text = statusToDisplay, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                string statusToDisplay = file.Status ?? "Status not available";
+                TextBlock statusText = new TextBlock { Text = statusToDisplay, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+                Grid.SetRow(statusText, rowIndex);
                 Grid.SetColumn(statusText, 1);
-                dataRow.Children.Add(statusText);
+                manualFilesGrid.Children.Add(statusText);
 
-                HyperlinkButton urlButton = new HyperlinkButton { HorizontalAlignment = HorizontalAlignment.Center, MaxWidth = 300, VerticalAlignment = VerticalAlignment.Center };
-                Grid.SetColumn(urlButton, 2);
+                HyperlinkButton urlButton = new HyperlinkButton { HorizontalAlignment = HorizontalAlignment.Center, MaxWidth = 300, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
                 string urlToDisplay = file.URL ?? "URL not available";
                 TextBlock urlTextBlock = new TextBlock
                 {
@@ -126,28 +123,30 @@ namespace _1703_UWP
                     VerticalAlignment = VerticalAlignment.Center
                 };
                 urlButton.Content = urlTextBlock;
-                dataRow.Children.Add(urlButton);
+                Grid.SetRow(urlButton, rowIndex);
+                Grid.SetColumn(urlButton, 2);
+                manualFilesGrid.Children.Add(urlButton);
 
-                TextBlock expiryDateText = new TextBlock { Text = file.DaysUntilExpiry, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                TextBlock expiryDateText = new TextBlock { Text = file.DaysUntilExpiry, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+                Grid.SetRow(expiryDateText, rowIndex);
                 Grid.SetColumn(expiryDateText, 3);
-                dataRow.Children.Add(expiryDateText);
+                manualFilesGrid.Children.Add(expiryDateText);
 
-                string fileSizeToDisplay = file.FileSizeReadable ?? "Size not available";
-                TextBlock fileSizeText = new TextBlock { Text = fileSizeToDisplay, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                string fileSizeToDisplay = file.FileSizeReadable ?? "Size not available";
+                TextBlock fileSizeText = new TextBlock { Text = fileSizeToDisplay, TextWrapping = TextWrapping.Wrap, TextTrimming = TextTrimming.CharacterEllipsis, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12) };
+                Grid.SetRow(fileSizeText, rowIndex);
                 Grid.SetColumn(fileSizeText, 4);
-                dataRow.Children.Add(fileSizeText);
+                manualFilesGrid.Children.Add(fileSizeText);
 
-                Button deleteButton = new Button { Width = 36, Height = 36, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center };
+                Button deleteButton = new Button { Width = 36, Height = 36, VerticalAlignment = VerticalAlignment.Center, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(12) };
                 deleteButton.Click += DeleteButton_Click;
                 deleteButton.DataContext = file;
                 FontIcon deleteIcon = new FontIcon { FontSize = 12, Glyph = "\uE74D" };
                 deleteButton.Content = deleteIcon;
+                Grid.SetRow(deleteButton, rowIndex);
                 Grid.SetColumn(deleteButton, 5);
-                dataRow.Children.Add(deleteButton);
+                manualFilesGrid.Children.Add(deleteButton);
 
-                manualFilesGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                manualFilesGrid.Children.Add(dataRow);
-                Grid.SetRow(dataRow, rowIndex);
                 rowIndex++;
             }
         }
